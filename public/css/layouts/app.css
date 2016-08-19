@@ -1,0 +1,49 @@
+.brats-border{
+	margin-right: 20px;
+	margin-left: 20px;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    background: #333;
+    -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+	background: lightgray; 
+}
+
+
+.seat-legends{
+    width: 20%;
+}
+.datepicker:hover{
+    cursor: pointer;
+
+}
+
+.checkout-text {
+    font-size: 1.5rem;
+}
+
+.checkout-alter-text {
+    color: #fffff0;
+    font-size: 1.4rem;
+}
+
+.checkout-border {
+    margin-right: 50px;
+    margin-left: 50px;
+}
