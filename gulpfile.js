@@ -1,5 +1,5 @@
 var elixir = require('laravel-elixir');
-
+require('laravel-elixir-vueify');
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -13,5 +13,5 @@ var elixir = require('laravel-elixir');
 
 elixir(function(mix) {
 	mix.browserify('seats.js', 'public/js/compiled/seats_es6.js');
-	//mix.browserify('seats.ajax.js', 'public/js/compiled/seats_es6.ajax.js');
+	mix.browserify('checkout.js', 'public/js/compiled/checkout_es6.js');
 });

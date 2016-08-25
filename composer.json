@@ -6,7 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.2.*"
+        "laravel/framework": "5.2.*",
+        "barryvdh/laravel-dompdf": "^0.7.0",
+        "greggilbert/recaptcha": "^2.1",
+        "laravelcollective/html": "^5.2",
+        "anhskohbo/no-captcha": "^2.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

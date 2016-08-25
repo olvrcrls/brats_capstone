@@ -82,6 +82,8 @@ class ScheduleController extends Controller
     public function route_show(Path $route)
     {
         // return $route;
+        $now = date("Y-m-d");
+        $interval = date('Y-m-d', strtotime($now. ' + 3 days')); //since the only allowed days before reserving a ticket is a minimum of 3 days
         //All Schedules are picked from a specific route
           $dispatches = Dispatch::select('TravelDispatch_Id', 'traveldispatch.Bus_Id', 'TravelDispatch_Date', 'BusType_Name', 'BusStatus_Name', 'TravelSchedule_Time', 'bustype.BusType_Id')
                   ->join('bus', 'traveldispatch.Bus_Id', '=', 'bus.Bus_Id')
@@ -89,6 +91,7 @@ class ScheduleController extends Controller
                   ->join('busstatus', 'bus.BusStatus_Id', '=', 'busstatus.BusStatus_Id')
                   ->join('triptype', 'bus.TripType_Id', '=', 'triptype.TripType_Id')
                   ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
+                  ->where('TravelDispatch_Date', '>=', $interval )
                   ->where('travelschedule.Route_Id', '=', $route->Route_Id)
                   ->where('triptype.TripType_Name', '=', 'Provincial')
                   ->where('BusStatus_Name', '=', 'On Queue')

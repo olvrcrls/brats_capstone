@@ -9,6 +9,7 @@ class bus_seat extends Model
     public $primaryKey = "BusSeat_Id";
  	public $table = "busseat";
  	public $timestamps = false;
+ 	protected $fillable = ['BusSeatStatus_Id'];
 
  	public function travel_dispatches()
  	{

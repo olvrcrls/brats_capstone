@@ -11518,15 +11518,32 @@ var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//import BusSeat from "../vue/seats.vue";
 _vue2.default.use(require('vue-resource')); //pre-compiled source code to ES6 -- Oliver Carlos
 
 var temp_seat_number = void 0;
 var totalPassengers = void 0;
-var emailRE = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+var emailRE = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\8]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 var vm = new _vue2.default({
 	el: 'body',
+	//components: { BusSeat },
+	transition: 'fade',
 	data: {
-		'SeatProfile': {
+		/*
+   * Variables for counter of rows and bus specifications
+  */
+		'ctrRow': 1,
+		'leftColumn': null,
+		'rightColumn': null,
+		'totalRows': null,
+		'rowPerColumn': null,
+
+		/*
+   *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
+  */
+
+		'seats': [], // array of seat data that are loaded from the initialize method
+		'SeatProfile': { //selected seat by the user for reservation
 			'seats': [],
 			'bustype': null,
 			'bustype_id': null,
@@ -11537,59 +11554,81 @@ var vm = new _vue2.default({
 			'route': null,
 			'route_id': null,
 			'_token': $('meta[name="csrf-token"]').attr('content')
-		},
+		}, // selected seats
 
-		'Payor': {
-			'payorFirstName': '',
-			'payorLastName': '',
+		'Payor': { // payor's information
+			'payorFirstName': '', // required
+			'payorLastName': '', // required
 			'payorMiddleName': '',
-			'payorEmail': '',
+			'payorEmail': '', // required
 			'payorContactNumber': ''
 
 		},
 
-		'passengers_left': 0,
+		'passengers_left': 0, // determines of how many seats will be selected by the user
 		'toggle': true, //should be original val: true
 		'agreed': false, //should be original val: false
 		'choices': []
 	}, //data binds
+
 	methods: {
 		initialize: function initialize() {
 			var _this = this;
 
-			this.$http.post('/api/seats', { bus: this.SeatProfile.bus, dispatch: this.SeatProfile.dispatch, _token: this.SeatProfile._token }).then(function (res) {
-				console.log(res.data);
-				_this.SeatProfile.seats = res.data;
-				setTimeout(_this.initialize(), 1500); //calls back the function every 1.5 seconds to refresh the seat status
-			}).catch(function (err) {
-				console.log(err);
+			this.$http.post('/api/seats', { bus: this.SeatProfile.bus, dispatch: this.SeatProfile.dispatch, _token: this.SeatProfile._token }).then(function (response) {
+				_this.seats = response.data;
+				setInterval(_this.initialize(), 500); //calls back the function every .5 second to refresh the seat status
+				// console.log(this.seats[0].bus_seat_statuses.BusSeatStatus_Name); //for testing.
+				// alternative setTimeout(this.initialize(), 1500);
+				//console.log(response.data); //to extract data ( response.data[index_number].property )
+				//console.log(this.seats[0].BusSeat_Number); // to extract data ( this.seats[index_number].property )
+			}).catch(function (error) {
+				console.log('Cannot retrieve data' + error.data);
 			}); //ajax request for retrieving the seats
 		},
 		reserve: function reserve(event) {
-
 			var indexSelected = void 0;
+			var seatId = void 0;
 			indexSelected = this.SeatProfile.seats.indexOf(event.target.id);
+			seatId = event.target.name;
+			// seatStatus = event.target.className;
 			if (this.passengers_left > 0 && indexSelected <= -1) {
-				event.target.src = '/images/selected_seat.png';
+				//checks if the seat is not yet reserved/queued and if there is slots left to pick
+				event.target.src = '/images/tentative_seat.png';
 				this.SeatProfile.seats.push(event.target.id); //add the item to array
 				this.passengers_left -= 1;
-
 				//ADD an ajax request here to change the seat status on database
+				// this.$http.post('/api/seats/update/queue', {seat_id: seatId, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
+				// 	// change the seat status of the current bus seat to `Queue` or `On Queue`
+				// 	console.log(event.target.id + ' has changed status.')
+				// }).catch(error => {
+				// 	console.log(event.target.id + ' cannot change status.')
+				// }); //$this.http.post request
 			} else if (indexSelected > -1) {
+				// checks if the seat is already on queue
 				event.target.src = '/images/available_seat.png';
 				this.SeatProfile.seats.splice(indexSelected, 1); //remove the item from array
 				this.passengers_left += 1;
 				if (this.choices.length > 0) {
 					indexSelected = this.choices.indexOf(event.target.id);
 					this.choices.splice(indexSelected, 1); //remove the item in the choices
-
 					//ADD an ajax request here to change the seat status on database
+					// this.$http.post('/api/seats/update/unqueue', {seat_id: seatId, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
+					// 	console.log(event.target.id + ' has changed status. Queue')
+					// // change the seat status of the current bus seat to `Available` or `Open`
+					// }).catch(error => {
+					// 	console.log(event.target.id + ' cannot change status.')
+					// }); //http post request
 				}
 			} else if (this.passengers_left == 0) {
 				alert("You have already completed choosing the seats for your passengers.\n Please proceed to click Check Out button.");
 			}
 		},
 		submit: function submit() {
+			/*
+    * Validation before
+    * Proceeding to input the Payor's information and Passengers Information
+   */
 			if (this.passengers_left == 0 && this.SeatProfile.seats != null) {
 				//submits the form
 				if (this.passengers_left == 0 && this.toggle == true) {
@@ -11604,6 +11643,9 @@ var vm = new _vue2.default({
 			}
 		},
 		agree: function agree() {
+			/*
+    * Validates the user's input in the payor's form
+   */
 			if (this.Payor.payorFirstName != '' && this.Payor.payorLastName != '' && emailRE.test(this.Payor.payorEmail)) {
 				this.agreed = true;
 			} else {
@@ -11615,12 +11657,33 @@ var vm = new _vue2.default({
 		},
 		returnPayor: function returnPayor() {
 			this.agreed = false;
+		},
+		verifyFields: function verifyFields(event) {
+			// verify all the seat choices chosen for each passengers
+			// seat choices must not be duplicated.
+			document.checkOutForm.submit();
 		}
 	}, //methods
 	ready: function ready() {
 		this.initialize(); //retrieves seats
 	}
 }); //Vue instance
+
+_vue2.default.transition('fade', {
+	css: false,
+	enter: function enter(el, done) {
+		$(el).css('opacity', 0).animate({ opacity: 1 }, 1500, done);
+	},
+	enterCancelled: function enterCancelled(el) {
+		$(el).stop();
+	},
+	leave: function leave(el, done) {
+		$(el).animate({ opacity: 0 }, 1500, done);
+	},
+	leaveCancelled: function leaveCancelled(el) {
+		$(el).stop();
+	}
+});
 
 },{"vue":3,"vue-resource":2}]},{},[4]);
 
