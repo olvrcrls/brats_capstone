@@ -64,3 +64,18 @@
     margin-right: 50px;
     margin-left: 50px;
 }
+
+.voucher_th
+{
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.voucher_th_td
+{
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    border-bottom: 0px;   
+}

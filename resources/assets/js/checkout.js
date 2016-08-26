@@ -1,16 +1,9 @@
-// pre-compiled es6 codes by Oliver Carlos
-import Vue from 'vue';
-let vm = new Vue({
-	el: 'body',
-	data:
-	{
-
-	},
-	methods: {
-		checkout(event)
-		{
-			console.log('User is checking out.');
-			let form = event.target.id
-		}
-	},
-}) //vue instance
+jQuery(document).ready(function($) {
+	$('#btnSubmit').on('click', function () {
+		let confirmBox = confirm("Please make sure of everything. \nProceed to printing your Transaction Voucher (E-Receipt)?");
+		// alert(confirmBox);
+		if ( confirmBox == true ) {
+			document.finalCheckoutForm.submit();
+		} else { document.finalCheckoutForm.preventDefault(); }
+	});
+});

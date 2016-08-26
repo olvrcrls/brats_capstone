@@ -16,11 +16,12 @@
     <title>Bus Reservation And Ticketing System</title>
     @endif
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/materialize/css/materialize.min.css">
+        <link rel="stylesheet" href="/materialize/css/materialize.css">
         <link rel="stylesheet" href="/css/font-awesome.min.css">
         <link rel="stylesheet" href="/css/layouts/app.css">
         <script type="text/javascript" src="/js/jquery.js"></script>
-        <script type="text/javascript" src="/materialize/js/materialize.min.js"></script>
+        <script type="text/javascript" src="/materialize/js/materialize.js"></script>
+        
         @yield('head')
 </head>
 <body class="blue-grey lighten-5"> 

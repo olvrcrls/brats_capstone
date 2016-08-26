@@ -74,7 +74,6 @@
 											@endif
 											<!-- CONDITION 1 -->
 									@elseif ($seat->bus_seat_statuses->BusSeatStatus_Name == 'Queue' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'queue')
-										</tr>
 											<td>
 												<a href="#!" id="{{ $seat->BusSeat_Id }}">
 													<img src="/images/selected_seat.png" alt="available_seat_icon" height="{{ $height }}px" width="{{ $width }}px" title="Seat is on process of reservation."
@@ -87,7 +86,6 @@
 											@endif
 
 									@elseif ($seat->bus_seat_statuses->BusSeatStatus_Name == 'Reserved' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'reserved' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'Reserve' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'reserve')
-										</tr>
 											<td>
 												<a href="#!" id="{{ $seat->BusSeat_Id }}" title="Already reserved">
 													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
@@ -101,7 +99,6 @@
 											@endif
 											<!-- CONDITION 2 -->
 									@elseif ($seat->bus_seat_statuses->BusSeatStatus_Name == 'Taken' || $seat->bus_seat_statuses->BusSeat_tatus_Name == 'taken')
-										</tr>	
 											<td>
 												<a href="#!" id="{{ $seat->BusSeat_Id }}">
 													<img src="/images/taken_seat.png" alt="available_seat_icon" 
@@ -138,7 +135,6 @@
 											<!-- CONDITION 4 -->
 
 									@elseif ($seat->bus_seat_statuses->BusSeatStatus_Name == 'Queue' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'queue')
-										</tr>
 											<td>
 												<a href="#!" id="{{ $seat->BusSeat_Id }}">
 													<img src="/images/selected_seat.png" alt="available_seat_icon" 
@@ -178,10 +174,8 @@
 											@endif
 											<!-- CONDITION 6 -->
 									@endif
-									</tr>
 								@else
 									@if ( $seat->bus_seat_statuses->BusSeatStatus_Name == 'Open' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'open' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'Available' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'available')
-									
 										<td>
 												<a href="#!" id="{{ $seat->BusSeat_Number }}">
 													<img src="/images/available_seat.png" alt="available_seat_icon"
@@ -198,7 +192,6 @@
 										<!-- CONDITION 7 -->
 
 									@elseif ($seat->bus_seat_statuses->BusSeatStatus_Name == 'Queue' || $seat->bus_seat_statuses->BusSeatStatus_Name == 'queue')
-										</tr>
 											<td>
 												<a href="#!" id="{{ $seat->BusSeat_Id }}">
 													<img src="/images/selected_seat.png" alt="available_seat_icon" 
@@ -382,8 +375,8 @@
 							<ul class="collapsible popout white-text" data-collapsible="accordion">
 								<li>
 									<div class="collapsible-header active flow-text yellow accent-4" title="Click to toggle the instructions">
-										<i class="black-text fa fa-hand-pointer-o"></i>
 										<b style="padding-left: 20px;">I N S T R U C T I O N S :</b>
+										<i class="black-text fa fa-hand-pointer-o"></i>
 									</div>
 									<div class="collapsible-body yellow white-text darken-2" style="padding: 20px 15px;">
 										<span class="flow-text">
@@ -422,7 +415,7 @@
 										</div>
 										<div class="input-field white-text col s4 col m4">
 											<input type="text" name="OnlineCustomer_LastName" id="payorLastName" required 
-													v-model="Payor.payorLastName" pattern="[A-Za-z ,.'-]{2,150}" 
+													v-model="Payor.payorLastName" pattern="[A-Za-z ,.'-]{2,150}" class="validate" 
 											/>
 											<label class="white-text" for="payorLastName">Last Name*</label>
 										</div>

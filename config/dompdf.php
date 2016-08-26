@@ -152,7 +152,7 @@ return array(
          *
          * @see CPDF_Adapter::PAPER_SIZES for valid sizes ('letter', 'legal', 'A4', etc.)
          */
-        "DOMPDF_DEFAULT_PAPER_SIZE" => "a4",
+        "DOMPDF_DEFAULT_PAPER_SIZE" => "legal",
 
         /**
          * The default font family
@@ -209,7 +209,7 @@ return array(
          *
          * @var bool
          */
-        "DOMPDF_ENABLE_PHP" => false,
+        "DOMPDF_ENABLE_PHP" => true,
 
         /**
          * Enable inline Javascript
@@ -238,7 +238,7 @@ return array(
          *
          * @var bool
          */
-        "DOMPDF_ENABLE_REMOTE" => true,
+        "DOMPDF_ENABLE_REMOTE" => false,
 
         /**
          * A ratio applied to the fonts height to be more like browsers' line height
@@ -251,13 +251,13 @@ return array(
          * Allows people to disabled CSS float support
          * @var bool
          */
-        "DOMPDF_ENABLE_CSS_FLOAT" => false,
+        "DOMPDF_ENABLE_CSS_FLOAT" => true,
 
 
         /**
          * Use the more-than-experimental HTML5 Lib parser
          */
-        "DOMPDF_ENABLE_HTML5PARSER" => false,
+        "DOMPDF_ENABLE_HTML5PARSER" => true,
 
 
     ),

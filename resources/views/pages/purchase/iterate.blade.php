@@ -6,7 +6,7 @@
 		</h2>
 		<hr> &nbsp;
 		<form method="POST" action="{{ url('/transaction/complete') }}" accept-charset="utf-8"
-			  name="finalCheckoutForm" id="finalCheckoutForm" @submit.prevent @submit=checkout($event)
+			  name="finalCheckoutForm" id="finalCheckoutForm" @submit.prevent
 		>
 			{{ csrf_field() }}
 			{{ method_field('POST') }}
@@ -19,9 +19,15 @@
 
 					<span class="checkout-text">
 						Full Name : <b>{{ $request->OnlineCustomer_FirstName.' '. $request->OnlineCustomer_MiddleName.' '.$request->OnlineCustomer_LastName }}</b>
-						<input type="hidden" name="OnlineCustomer_FirstName" value="{{ $request->OnlineCustomer_FirstName }}">
-						<input type="hidden" name="OnlineCustomer_LastName" value="{{ $request->OnlineCustomer_LastName }}">
-						<input type="hidden" name="OnlineCustomer_MiddleName" value="{{ $request->OnlineCustomer_MiddleName }}">
+						<input type="hidden" name="OnlineCustomer_FirstName" value="{{ $request->OnlineCustomer_FirstName }}"
+							   v-model="OnlineCustomer.firstName"
+						>
+						<input type="hidden" name="OnlineCustomer_LastName" value="{{ $request->OnlineCustomer_LastName }}"
+								v-model="OnlineCustomer.lastName"
+						>
+						<input type="hidden" name="OnlineCustomer_MiddleName" value="{{ $request->OnlineCustomer_MiddleName }}"
+								v-model="OnlineCustomer.middleName"
+						>
 					</span> <br><br>
 					<span class="checkout-text">
 						Contact Number : <b>{{ $request->OnlineCustomer_ContactNumber }}</b>
@@ -29,7 +35,9 @@
 					</span> <br><br>
 					<span class="checkout-text">
 						E-mail Address : <b>{{ $request->OnlineCustomer_Email }}</b>
-						<input type="hidden" name="OnlineCustomer_Email" value="{{ $request->OnlineCustomer_Email }}">
+						<input type="hidden" name="OnlineCustomer_Email" value="{{ $request->OnlineCustomer_Email }}"
+								v-model="OnlineCustomer.email"
+						>
 					</span> <br><br>
 					<span class="checkout-text">
 						Date of Reservation : <b>{{ date_format(date_create($request->OnlineCustomer_DateOfReservation), 'm/d/Y') }}</b>
@@ -87,7 +95,7 @@
 						</li>
 					</ul>
 				</div>
-				<div class="card-panel yellow accent-4 white-text text-darken-1 z-depth-3 hoverable col s5 col m5"
+				<div class="card-panel yellow darken-2 white-text text-darken-1 z-depth-3 hoverable col s5 col m5"
 						style=" margin-left: 10px; width: 38%;" 
 				>
 					<h4 class="flow-text"><b>Passenger`s Information <i class="fa fa-users"></i></b></h4>
@@ -125,7 +133,7 @@
 						</span><br>&nbsp;
 						<span>
 							Fare Price : <b><i class="fa fa-rub"></i> {{ $passengers[$i]->fare }}</b>
-							<input type="hidden" name="fares[]" value="{{ $passengers[$i]->fare }}">
+							<input type="hidden" name="fares[]" value="{{ (float)$passengers[$i]->fare }}" v-model="Passenger.fares[]">
 						</span><br>&nbsp;
 							<?php $totalFarePrice += $passengers[$i]->fare ; ?>
 					@endfor
@@ -146,7 +154,8 @@
 						<button class="btn btn-large col m6 offset-m3
 								 green darken-1 
 								 waves-effect waves-light z-depth-2" 
-								 type="button" id="btnSubmit">
+								 type="button" id="btnSubmit"
+						>
 							<b>PROCEED <i class="fa fa-check"></i></b>
 						</button>
 					</div>

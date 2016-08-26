@@ -1,19 +1,4 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Requests;
-use App;
-class TestController extends Controller
-{
-	public function pdf()
-	{
-		# code...
-    	$pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML("
-                    <!DOCTYPE html>
+<!DOCTYPE html>
                     <html>
                     <head>
                         <title>
@@ -370,20 +355,3 @@ class TestController extends Controller
                         </div>
                     </body>
                     </html>
-                ");
-        return $pdf->setPaper('legal', 'portrait')->stream('test.pdf');
-    }
-
-    public function email()
-    {
-    	Mail::send('test.email', ['name' => 'Oliver'], function ($message) {
-		$message->to('lr.flores@iskolarngbayan.pup.edu.ph', 'Balong')->subject('Test');
-	});
-
-    	// return('Success');
-
-	// Mail::send('E-MAIL TEMPLATE', ['VARIABLE_TO_TEMPLATE' => 'VALUE'], function ($message) {
-	// 	$message->to('RECEIVER@MAIL.COM', 'NAME OF THE RECEIVER')->subject('SUBJECT');
-	// });
-    }
-}
