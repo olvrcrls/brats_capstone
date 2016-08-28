@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Http\Requests;
+
 use App\bus as Bus;
 use App\bus_seat as Seat;
 use App\route_path_ways as Path;
 use App\online_reservation_fee as OnlineFee;
 use DB;
-
 use App\online_customer as OnlineCustomer;
 use App\purchase as Purchase;
 use App\purchase_type as PurchaseType;
@@ -42,12 +42,11 @@ class TransactionController extends Controller
     	$fares = DB::select("CALL GetFareMatrixTable($request->bustype_id, $request->route_id)");
     	//getting the fares for each destinations of the Route
 
-    	 $seats = Seat::with('travel_dispatches.buses', 'bus_seat_statuses')
+    	 $seats = Seat::join('busseatstatus', 'busseat.BusSeatStatus_Id', '=', 'busseatstatus.BusSeatStatus_Id')
         				->join('bus', 'busseat.Bus_Id', '=', 'bus.Bus_Id')
         				->join('bustype', 'bustype.BusType_Id', '=', 'bus.BusType_Id')
         				->where('TravelDispatch_Id', $request->dispatch)
                         ->where('busseat.Bus_Id', $request->bus)
-                        
                         ->orderBy('BusSeat_Id')
                         ->get();
     	//getting the specific seat arrangement of the bus and dispatch travel
@@ -56,7 +55,6 @@ class TransactionController extends Controller
          {
          	return back();
          }
-
         $trip = new\stdClass;
     	$trip->travel_date = $request->travel_date;
     	$trip->bus = $request->bus;
@@ -258,10 +256,10 @@ class TransactionController extends Controller
 
     public function getTerminal($request)
     {
-        $Id = Route::select('Route_Id')
+        $Id = Route::select('Terminal_IdStart')
                              ->where('Route_Id', '=', $request)
                              ->get();
-        return $Id[0]->Route_Id;
+        return $Id[0]->Terminal_IdStart;
 
     }
 

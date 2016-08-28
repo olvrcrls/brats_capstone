@@ -30,12 +30,6 @@ class EmailController extends Controller
 
        $onlineFee = $this->getOnlineFee(); 
 
-    	/*
-		 * TODO : GET FULL NAME OF THE PAYOR
-		 *		  GET THE TRANSACTION NUMBER
-		 *	      PROVIDE A TRACKING OF FILE PATH OF THE PDF
-		 *	      COMPLETE customer_email.blade.php TEMPLATE
-    	*/
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
@@ -130,7 +124,7 @@ class EmailController extends Controller
                                 </tr>
                                 <tr>
                                     <td>
-                                        <b>Route:</b> 
+                                        <b>Route:</b> $route 
                                     </td>
                                     <td>
                                         <b>Date of Departure:</b> $departure_date
@@ -352,7 +346,7 @@ class EmailController extends Controller
                                         <td align='center'>".
                                             $ticket->RoutePathWays_Place
                                         ."</td>
-                                        <td align='right'> Php".
+                                        <td align='right'> Php ".
                                            $ticket->PassengerTicket_Price
                                         ."</td>
                                     </tr>";
@@ -443,18 +437,12 @@ class EmailController extends Controller
 
        $onlineFee = $this->getOnlineFee(); 
 
-    	/*
-		 * TODO : GET FULL NAME OF THE PAYOR
-		 *		  GET THE TRANSACTION NUMBER
-		 *	      PROVIDE A TRACKING OF FILE PATH OF THE PDF
-		 *	      COMPLETE customer_email.blade.php TEMPLATE
-    	*/
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
     	$valid = date_format(date_sub(date_create($dispatch[0]->TravelDispatch_Date), date_interval_create_from_date_string("1 day")), 'm/d/Y');
     	/*
-    	 * CREATING PDF FILE
+    	 * CREATING PDF OUTPUT
     	 */
     		$html = "<!DOCTYPE html>
                     <html>
@@ -543,7 +531,7 @@ class EmailController extends Controller
                                 </tr>
                                 <tr>
                                     <td>
-                                        <b>Route:</b> 
+                                        <b>Route:</b> $route
                                     </td>
                                     <td>
                                         <b>Date of Departure:</b> $departure_date
@@ -765,7 +753,7 @@ class EmailController extends Controller
                                         <td align='center'>".
                                             $ticket->RoutePathWays_Place
                                         ."</td>
-                                        <td align='right'> Php".
+                                        <td align='right'> Php ".
                                            $ticket->PassengerTicket_Price
                                         ."</td>
                                     </tr>";
@@ -822,15 +810,16 @@ class EmailController extends Controller
                         </div>
                     </body>
                     </html>";
-
+        /*
+		 * returning download link. automatically downloads PDF FILE
+        */
     	$pdf = App::make('dompdf.wrapper');
     	$pdf->loadHTML($html)->setPaper('legal', 'portrait');
     	return $pdf->download("$purchase->Purchase_Id - E-Voucher BRATS.pdf");
     }
 
-    public function print(Purchase $purchase, Customer $customer)
+    public function printDocument(Purchase $purchase, Customer $customer)
     {
-    	# code...
     	$dispatch = Dispatch::select('Route_Name', 'TravelDispatch_Date', 'TravelSchedule_Time')
                               ->where('TravelDispatch_Id', '=', $purchase->TravelDispatch_Id)
                               ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
@@ -843,13 +832,6 @@ class EmailController extends Controller
                                    ->get();
 
        $onlineFee = $this->getOnlineFee(); 
-
-    	/*
-		 * TODO : GET FULL NAME OF THE PAYOR
-		 *		  GET THE TRANSACTION NUMBER
-		 *	      PROVIDE A TRACKING OF FILE PATH OF THE PDF
-		 *	      COMPLETE customer_email.blade.php TEMPLATE
-    	*/
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
@@ -944,7 +926,7 @@ class EmailController extends Controller
                                 </tr>
                                 <tr>
                                     <td>
-                                        <b>Route:</b> 
+                                        <b>Route:</b> $route
                                     </td>
                                     <td>
                                         <b>Date of Departure:</b> $departure_date
@@ -1166,7 +1148,7 @@ class EmailController extends Controller
                                         <td align='center'>".
                                             $ticket->RoutePathWays_Place
                                         ."</td>
-                                        <td align='right'> Php".
+                                        <td align='right'> Php ".
                                            $ticket->PassengerTicket_Price
                                         ."</td>
                                     </tr>";
@@ -1223,12 +1205,16 @@ class EmailController extends Controller
                         </div>
                     </body>
                     </html>";
-
+        /*
+		 * Outputting the PDF FILE to the BROWSER
+        */
         $pdf = App::make('dompdf.wrapper');
     	$pdf->loadHTML($html)->setPaper('legal', 'portrait');
     	return $pdf->stream("$purchase->Purchase_Id - E-Voucher BRATS.pdf");
     }
 
+    // function for getting the amount 
+    // -> added to model for shortcut
     public function getOnlineFee()
     {
         $fee = OnlineFee::select('OnlineReservationFee_Amount')

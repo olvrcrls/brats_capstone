@@ -1,7 +1,10 @@
 <html>
 <body>
 <h3>
-	<img src='<?php echo $message->embed("./logo.png"); ?>' width='100px' height='100px'>
+	<img 
+		src='<?php echo $message->embed("./logo.png"); 
+		// embedding the image of the company logo here
+	?>' width='100px' height='100px'>
 	<b><u>BUS RESERVATION AND TICKETING SYSTEM COMPANY</u></b>
 </h3>
 <br>

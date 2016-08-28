@@ -29,10 +29,12 @@ Route::post('/book_seats/iterate', 'TransactionController@view');
 Route::post('/transaction/complete', 'TransactionController@store');
 Route::get('/transaction/voucher/{purchase}/transaction/{customer}/viewprint', 'EmailController@index');
 Route::get('/voucher/save/{purchase}/{customer}/VoucherPDF', 'EmailController@save');
-Route::get('/voucher/print/{purchase}/{customer}/VoucherPDF', 'EmailController@print');
-//API
+Route::get('/voucher/print/{purchase}/{customer}/VoucherPDF', 'EmailController@printDocument');
 
+/* API URLs */
 Route::post('/api/seats', 'SeatController@ajaxRetrieve');
+Route::post('/api/seats/check', 'SeatController@ajaxCheck');
+Route::put('/api/seats/update/tentative', 'SeatController@ajaxUpdate_tentative');
 Route::put('/api/seats/update/queue', 'SeatController@ajaxUpdate_queue');
 Route::put('/api/seats/update/unqueue', 'SeatController@ajaxUpdate_unqueue');
 

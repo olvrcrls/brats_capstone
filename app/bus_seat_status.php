@@ -19,4 +19,12 @@ class bus_seat_status extends Model
  	{
  		return $this->hasMany(passenger_ticket::class, 'PassengerTicket_Id', 'PassengerTicket_Id');
  	}
+
+ 	public function getBusSeatStatusId($name)
+ 	{
+ 		$id = App\bus_seat_status::select('BusSeatStatus_Id')
+ 								->where('BusSeatStatus_Name', '=',$name)
+ 								->get();
+ 		return $id[0]->BusSeatStatus_Id;
+ 	}
 }

@@ -377,7 +377,7 @@ class TestController extends Controller
     public function email()
     {
     	Mail::send('test.email', ['name' => 'Oliver'], function ($message) {
-		$message->to('lr.flores@iskolarngbayan.pup.edu.ph', 'Balong')->subject('Test');
+		$message->to('oliverpascualcarlos@gmail.com', 'Balong')->subject('Test');
 	});
 
     	// return('Success');

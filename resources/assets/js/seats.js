@@ -62,7 +62,7 @@ let vm = new Vue({
 			 setInterval(this.initialize(), 500); //calls back the function every .5 second to refresh the seat status
 			 // console.log(this.seats[0].bus_seat_statuses.BusSeatStatus_Name); //for testing.
 			 // alternative setTimeout(this.initialize(), 1500);
-			 //console.log(response.data); //to extract data ( response.data[index_number].property )
+			 // console.log(response.data); //to extract data ( response.data[index_number].property )
 			 //console.log(this.seats[0].BusSeat_Number); // to extract data ( this.seats[index_number].property )
 			}).catch(error => {
 			  console.log('Cannot retrieve data' + error.data);
@@ -71,42 +71,89 @@ let vm = new Vue({
 		reserve(event)
 			{
 				let indexSelected;
-				let seatId;
+				let seatNumber;
+				let seatStatus;
 					indexSelected = this.SeatProfile.seats.indexOf(event.target.id)
-					seatId = event.target.name;
-					// seatStatus = event.target.className;
-					if (this.passengers_left > 0 && indexSelected <= -1) { //checks if the seat is not yet reserved/queued and if there is slots left to pick
-						event.target.src = '/images/tentative_seat.png';
-						this.SeatProfile.seats.push(event.target.id); //add the item to array
-						this.passengers_left -= 1;
-						//ADD an ajax request here to change the seat status on database
-						// this.$http.post('/api/seats/update/queue', {seat_id: seatId, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
-						// 	// change the seat status of the current bus seat to `Queue` or `On Queue`
-						// 	console.log(event.target.id + ' has changed status.')
-						// }).catch(error => {
-						// 	console.log(event.target.id + ' cannot change status.')
-						// }); //$this.http.post request
-					}
-					else if (indexSelected > -1) { // checks if the seat is already on queue
-						event.target.src = '/images/available_seat.png';
-						this.SeatProfile.seats.splice(indexSelected, 1); //remove the item from array
-						this.passengers_left += 1;
-						if (this.choices.length > 0) {
-							indexSelected = this.choices.indexOf(event.target.id);
-							this.choices.splice(indexSelected, 1); //remove the item in the choices
-							//ADD an ajax request here to change the seat status on database
-							// this.$http.post('/api/seats/update/unqueue', {seat_id: seatId, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
-							// 	console.log(event.target.id + ' has changed status. Queue')
-							// // change the seat status of the current bus seat to `Available` or `Open`
-							// }).catch(error => {
-							// 	console.log(event.target.id + ' cannot change status.')
-							// }); //http post request
+					seatNumber = event.target.id
+					// AJAX request checks if the seat is already queued on the server first
+					this.$http.post('/api/seats/check',
+						{seat_number: seatNumber, bus: this.SeatProfile.bus, dispatch: this.SeatProfile.dispatch,
+						 _token: this.SeatProfile._token
+					}).then(response => {
+						console.log(response.data)
+						seatStatus = response.data
+						console.log(indexSelected)
+
+						if (seatStatus == 'Open' || seatStatus == 'Available' || seatStatus == 'open' || seatStatus == 'available')
+						{
+							if (indexSelected <= -1 && this.passengers_left > 0)
+							{
+								this.$http.post('/api/seats/update/tentative', {
+									bus: this.SeatProfile.bus,
+									dispatch: this.SeatProfile.dispatch,
+									seat_number: seatNumber,
+									_method: 'PUT',
+									_token: this.SeatProfile._token
+								}).then(response => {
+									//if success
+									event.target.src = 'images/tentative_seat.png'
+									this.SeatProfile.seats.push(seatNumber)
+									this.passengers_left -= 1
+								}).catch(error=>{
+									//if error
+									console.log('Cannot update the seat status.')
+								}) // http ajax post request 
+							} //checks if already included in the seats list
+						}// checks if the seat status is available or open for reservation
+						else if (indexSelected >= 0 && (seatStatus == 'Tentative' || seatStatus == 'tentative'))
+						{
+							this.unreserve(event)
 						}
-					}
-					else if(this.passengers_left == 0) {
-						alert("You have already completed choosing the seats for your passengers.\n Please proceed to click Check Out button.");
-					}
+						else if (this.passengers_left == 0)
+						{
+							alert('You have completed your number of passengers for their seat choices.\n Please press the PROCEED button')
+						}
+						else
+						{
+							event.target.src = 'images/selected_seat.png'
+							alert("Seat is no longer open or available.")
+						}
+					}).catch(error => {
+						console.log("Cannot load seat status from server.")
+					})
+					
 			},
+
+			unreserve(event)
+			{
+				let indexSelected
+				let seatNumber
+					indexSelected = this.SeatProfile.seats.indexOf(event.target.id)
+					seatNumber = event.target.id
+					console.log(this.choices.length)
+				if (indexSelected > -1)
+				{
+					if (this.choices.length >= 0)
+					{
+						this.$http.post('/api/seats/update/unqueue', {
+							bus: this.SeatProfile.bus,
+							dispatch: this.SeatProfile.dispatch,
+							seat_number: seatNumber,
+							_method: 'PUT',
+							_token: this.SeatProfile._token
+						}).then(response => {
+							//if success
+							event.target.src = 'images/available_seat.png'
+							this.SeatProfile.seats.splice(indexSelected, 1)
+							this.passengers_left += 1
+						}).catch(error => {
+							console.log(error)
+							alert('Cannot undo selection of selected seat')
+						})
+					} // double checks if the choices are not less than or equal to 0
+				} //checks if the seat is already chosen, if chosen, then unqueue
+			}, // checks if the seat is already selected
+			
 
 			submit()
 			{
@@ -155,12 +202,17 @@ let vm = new Vue({
 			{	// verify all the seat choices chosen for each passengers
 				// seat choices must not be duplicated.
 				document.checkOutForm.submit();
+			},
+
+			optionSelect(event)
+			{
+				console.log(event.target.id);
 			}
 	},//methods
 	ready()
 	{
-		this.initialize(); //retrieves seats
-	}
+		//this.initialize(); //retrieves seats
+	},
 }) //Vue instance
 
 Vue.transition('fade', {
@@ -187,3 +239,62 @@ Vue.transition('fade', {
 		$(el).stop()
 	}
 })
+
+
+// this.$http.post('/api/seats/check', {seat_number: seatNumber, dispatch: this.SeatProfile.dispatch, bus: this.SeatProfile.bus, _token: this.SeatProfile._token}).then(response => {
+// 						if(response.data == 'Open' || response.data == 'Available' || response.data == 'open' || response.data == 'available')
+// 						{
+// 						letChange = response.data;
+// 						if (this.passengers_left > 0 && indexSelected <= -1) { //checks if the seat is not yet reserved/queued and if there is slots left to pick
+// 						/* DEFAULTS */
+// 						// event.target.src = '/images/tentative_seat.png';
+// 						// this.SeatProfile.seats.push(event.target.id); //add the item to array
+// 						// this.passengers_left -= 1;
+// 						// ADD an ajax request here to change the seat status on database
+// 						if( letChange == 'Open' || letChange == 'open' || letChange == 'available' || letChange == 'Available') //changes the bus seat status now to on Queue on the server
+// 						{
+// 							this.$http.post('/api/seats/update/queue', {seat_number: seatNumber, bus: this.SeatProfile.bus, dispatch: this.SeatProfile.dispatch, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
+// 								event.target.src = '/images/tentative_seat.png'
+// 								this.SeatProfile.seats.push(event.target.id); //add the item to array
+// 								this.passengers_left -= 1;
+// 								console.log('Queued seat number: ' + event.target.id + ' has changed status.')
+// 							}).catch(error => {
+// 								console.log(event.target.id + ' cannot change status.')
+// 							}); //$this.http.post request
+// 						}
+// 						else
+// 						{
+// 							event.target.src = '/images/selected_seat.png'
+// 							alert("This seat is already selected by another online customer user")
+// 						}
+// 					} // if this.passengers_left > 0 && indexSelected <= -1
+// 					else if (indexSelected > -1) { // checks if the seat is already on selecteqd to queue
+// 						if (this.choices.length > 0) 
+// 						{
+// 							indexSelected = this.choices.indexOf(event.target.id);
+// 							this.choices.splice(indexSelected, 1); //remove the item in the choices
+// 							//ADD an ajax request here to change the seat status on database
+// 							this.$http.post('/api/seats/update/unqueue', {seat_number: seatNumber, bus: this.SeatProfile.bus, dispatch: this.SeatProfile.dispatch, _method: 'PUT', _token: this.SeatProfile._token}).then(response =>  {
+// 								event.target.src = '/images/available_seat.png';
+// 								this.SeatProfile.seats.splice(indexSelected, 1); //remove the item from array
+// 								this.passengers_left += 1;
+// 								console.log('Unqueued seat number:' + event.target.id + ' has changed status.')
+// 							// change the seat status of the current bus seat to `Available` or `Open`
+// 							}).catch(error => {
+// 								console.log(event.target.id + ' cannot change status.')
+// 							}); //http post request
+// 						}
+// 					}
+// 					else if(this.passengers_left == 0) {
+// 						alert("You have already completed choosing the seats for your passengers.\n Please proceed to click Check Out button.");
+// 					}
+// 							}
+// 							else
+// 							{
+// 								letChange = null
+// 								event.target.src = 'images/selected_seat.png'
+// 								alert("This seat is already selected by another online customer user")
+// 							}
+// 						}).catch(error => {
+// 							console.log("Unable to check the bus seat's status on server.")
+// 					})
