@@ -489,12 +489,6 @@
 												<b>AGREE <i class="fa fa-check"></i></b>
 											</button>
 										</div>
-										<!-- <div class="row col s12 col m12">
-											<!-- DISPLAY RECAPTCHA -->
-											<!--
-											{-- !! app('captcha')->display() !! --}
-											{-- !! $errors->first('g-recaptcha-response', '<p class="flow-text">:message</p>') !! --}
-										</div> -->
 									</div>
 								</div>
 								<div class="card-panel green white-text lighten-1 col s12 col m12 z-depth-3 hoverable" v-show="agreed">

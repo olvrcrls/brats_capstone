@@ -37,6 +37,7 @@ Route::post('/api/seats/check', 'SeatController@ajaxCheck');
 Route::put('/api/seats/update/tentative', 'SeatController@ajaxUpdate_tentative');
 Route::put('/api/seats/update/queue', 'SeatController@ajaxUpdate_queue');
 Route::put('/api/seats/update/unqueue', 'SeatController@ajaxUpdate_unqueue');
+Route::put('/api/seats/update/all/unqueue', 'SeatController@ajaxUpdate_unqueue_all');
 
 /* TEST */
 Route::get('/test/email', 'TestController@email');

@@ -47,12 +47,20 @@ class SeatController extends Controller
 
     public function ajaxUpdate_queue(Request $request)
     {
-        $seat = Seat::where('BusSeat_Number', '=', $request->seat_number)
+        foreach ($request->seats as $seat) {
+            $seat = Seat::where('BusSeat_Number', '=', $seat)
                       ->where('Bus_Id', '=', $request->bus)
                       ->where('TravelDispatch_Id', '=', $request->dispatch)
                       ->get();
-        $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
-        $seat[0]->save(); // updates the seat status of a seat
+            $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+            $seat[0]->save(); // updates the seat status of a seat
+        }      
+        // $seat = Seat::where('BusSeat_Number', '=', $request->seat_number)
+        //               ->where('Bus_Id', '=', $request->bus)
+        //               ->where('TravelDispatch_Id', '=', $request->dispatch)
+        //               ->get();
+        // $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+        // $seat[0]->save(); // updates the seat status of a seat
     }
 
     public function ajaxUpdate_unqueue(Request $request)
@@ -64,6 +72,18 @@ class SeatController extends Controller
         $seat[0]->BusSeatStatus_Id = $this->getSeatUnqueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
         $seat[0]->save();
         
+    }
+
+    public function ajaxUpdate_unqueue_all(Request $request)
+    {
+        foreach ($request->seats as $seat) {
+            $seat = Seat::where('BusSeat_Number', '=', $seat)
+                      ->where('Bus_Id', '=', $request->bus)
+                      ->where('TravelDispatch_Id', '=', $request->dispatch)
+                      ->get();
+            $seat[0]->BusSeatStatus_Id = $this->getSeatTentativeId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+            $seat[0]->save(); // updates the seat status of a seat
+        }    
     }
 
     private function getSeatUnqueueId()
