@@ -131,6 +131,7 @@ class TransactionController extends Controller
     {
         $totalFarePrice = 0;
         $onlineFee = $this->getOnlineFee(); //getting the latest online reservation fee.    
+
         for ($i=0; $i < $request->totalPassengers ; $i++) 
         { 
             $totalFarePrice += $request->fares[$i];
@@ -144,6 +145,7 @@ class TransactionController extends Controller
         $terminal = $this->getTerminal($request->Route_Id); // getting id of terminal
         $purchaseTypeId = $this->getPurchaseType('Online'); // getting id of bus seat status
         $PaymentStatus_Id = $this->getPaymentStatus('Unpaid'); //getting id of payment status
+
 
         // inserting of Purchase data
         $purchaseTransaction = Purchase::create([

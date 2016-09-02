@@ -11537,7 +11537,7 @@ var vm = new _vue2.default({
 		'rightColumn': null,
 		'totalRows': null,
 		'rowPerColumn': null,
-		'selectedSeat': [],
+		'pickedSeats': [],
 
 		/*
    *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
@@ -11667,7 +11667,9 @@ var vm = new _vue2.default({
 					this.$http.post('/api/seats/update/queue', {
 						bus: this.SeatProfile.bus,
 						dispatch: this.SeatProfile.dispatch,
-						seats: this.choices
+						seats: this.choices,
+						_method: 'PUT',
+						_token: this.SeatProfile._token
 					}).then(function (response) {
 						alert('Now, please input some information for the following forms.');
 						_this3.toggle = false;
@@ -11704,7 +11706,6 @@ var vm = new _vue2.default({
 				console.log(error);
 			});
 		},
-		selected: function selected() {},
 		returnPayor: function returnPayor() {
 			this.agreed = false;
 		},
@@ -11716,7 +11717,29 @@ var vm = new _vue2.default({
 		optionSelect: function optionSelect(event) {
 			console.log(event.target.id);
 		}
-	} }); //Vue instance
+	}, //methods
+
+	Beforedestroy: function Beforedestroy() {
+		// this eliminates the selected seats when the window is closed or refreshed
+
+		if (this.choices.length > 0) {
+			this.$http.post('/api/seats/update/all/available', {
+				'bus': this.SeatProfile.bus,
+				'seats': this.choices,
+				'dispatch': this.SeatProfile.dispatch,
+				'_token': this.SeatProfile._token,
+				'_method': 'PUT'
+			}).then(function (response) {
+				// if success
+				console.log('Selected seats are now updated to "Available"');
+			}).catch(function (error) {
+				// if failure
+				console.log('Unable to change or update seat statuses');
+				console.log(error);
+			});
+		} // checks if there are selected seats first
+	}
+}); //Vue instance
 /* TO DO : Transition effecs, etc etc */
 _vue2.default.transition('fade', {
 	css: false,

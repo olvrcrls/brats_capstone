@@ -74,6 +74,18 @@ class SeatController extends Controller
         
     }
 
+    public function ajaxUpdate_setAvailable_all(Request $request)
+    {
+        foreach ($request->seats as $seat) {
+            $seat = Seat::where('BusSeat_Number', '=', $seat)
+                      ->where('Bus_Id', '=', $request->bus)
+                      ->where('TravelDispatch_Id', '=', $request->dispatch)
+                      ->get();
+            $seat[0]->BusSeatStatus_Id = $this->getSeatUnqueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+            $seat[0]->save(); // updates the seat status of a seat
+        }     
+    }
+
     public function ajaxUpdate_unqueue_all(Request $request)
     {
         foreach ($request->seats as $seat) {

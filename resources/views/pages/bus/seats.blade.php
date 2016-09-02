@@ -557,8 +557,8 @@
 													<select required id="passengerSeat" name="passengerSeat[]" class="green lighten-1 white-text browser-default"> 
 														<!-- INSERT INTO CLASS `browser-default` to functon -->
 														<option class="grey-text" selected="" disabled="" value="">Select Bus Seat*</option>
-														<option v-for="choice of choices" value="@{{ choice }}" 
-																id="@{{ choice }}" @click="optionSelect($event)"
+														<option v-for="choice of choices" value="@{{ choice }}"
+																id="@{{ choice }}"
 														>
 															Seat Number: @{{ choice }}
 														</option>

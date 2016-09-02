@@ -18,8 +18,7 @@ let vm = new Vue({
 		'rightColumn': null,
 		'totalRows': null,
 		'rowPerColumn': null,
-		'selectedSeat': [],
-		
+		'pickedSeats': [],
 
 		/*
 		 *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
@@ -160,7 +159,9 @@ let vm = new Vue({
 							this.$http.post('/api/seats/update/queue', {
 								bus: this.SeatProfile.bus,
 								dispatch: this.SeatProfile.dispatch,
-								seats: this.choices
+								seats: this.choices,
+								_method: 'PUT',
+								_token: this.SeatProfile._token
 							}).then(response => {
 								alert('Now, please input some information for the following forms.');
 								this.toggle = false;
@@ -203,11 +204,6 @@ let vm = new Vue({
 				
 			},
 
-			selected()
-			{
-
-			},
-
 			returnPayor()
 			{
 				this.agreed = false;
@@ -224,6 +220,29 @@ let vm = new Vue({
 				console.log(event.target.id);
 			}
 	},//methods
+
+	Beforedestroy()
+	{
+		// this eliminates the selected seats when the window is closed or refreshed
+
+		if (this.choices.length > 0)
+		{
+			this.$http.post('/api/seats/update/all/available', {
+				'bus': this.SeatProfile.bus,
+				'seats': this.choices,
+				'dispatch': this.SeatProfile.dispatch,
+				'_token': this.SeatProfile._token,
+				'_method': 'PUT'
+			}).then(response => {
+				// if success
+				console.log('Selected seats are now updated to "Available"')
+			}).catch(error => {
+				// if failure
+				console.log('Unable to change or update seat statuses')
+				console.log(error)
+			})
+		} // checks if there are selected seats first
+	}
 }) //Vue instance
 /* TO DO : Transition effecs, etc etc */
 Vue.transition('fade', {
