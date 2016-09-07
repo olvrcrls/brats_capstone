@@ -88,7 +88,20 @@
 							<p><b>C.</b> Be at the terminal for atleast <b>30 minutes</b> before the departure time. Your reserved seats will be given to those who can accomodate, if the reserved passengers will be late.</p>
 						</li>
 						<li>
-							<p><b>D.</b> Transactions can only be refunded within 2 days after the reservation date.</p>
+							<p><b>D.</b> - Reserved Tickets that are already fully paid / half paid can only be refunded within <b>2 days from the date of the ticket(s) reservation</b>.
+							<br><br>
+						Percentage of refunded money as every day lapse. <br>
+						<ul>
+							<li>
+								> <b>100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the reservation date.
+							</li>
+							<li>
+								> <b>80%</b> refund money (excluding online service fee) when refunded 1 day after the reservation date.
+							</li>
+							<li>
+								> <b>75%</b> refund money (excluding online service fee) when refunded 2 days after the reservation date.
+							</li>
+						</ul></p>
 						</li>
 						<li>
 							<p><b>E.</b> Each online reservation transactions have <i class="fa fa-rub"></i>{{ $onlineFee }} additional to the <b>Total Transaction Price</b> in accordance for the fee of online services and maintenance.</p>

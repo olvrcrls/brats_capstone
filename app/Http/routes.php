@@ -30,6 +30,9 @@ Route::post('/transaction/complete', 'TransactionController@store');
 Route::get('/transaction/voucher/{purchase}/transaction/{customer}/viewprint', 'EmailController@index');
 Route::get('/voucher/save/{purchase}/{customer}/VoucherPDF', 'EmailController@save');
 Route::get('/voucher/print/{purchase}/{customer}/VoucherPDF', 'EmailController@printDocument');
+Route::get('/manage/trip', 'TransactionController@manage');
+
+
 
 /* API URLs */
 Route::post('/api/seats', 'SeatController@ajaxRetrieve');

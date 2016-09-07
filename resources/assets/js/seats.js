@@ -104,7 +104,7 @@ let vm = new Vue({
 						else
 						{
 							event.target.src = 'images/selected_seat.png'
-							alert("The seat is no longer available or open. \n Some another user must have picked that first before you.")
+							alert("The seat is no longer available or open.")
 						}
 					}).catch(error => {
 						console.log("Cannot load seat status from server.")
@@ -215,9 +215,15 @@ let vm = new Vue({
 				document.checkOutForm.submit();
 			},
 
-			optionSelect(event)
+			selectedSeat(event) // records and checks if the seat number is already assigned to a passenger
 			{
-				console.log(event.target.id);
+				let index = (event.target.id) - 1
+				let value = (event.target.value)
+				let numberOfChoices = this.choices.length // total number of choices allowed. determines how many index will pickedSeats have.
+				console.log("Index: " + event.target.id + " Value: " + event.target.value)
+				this.pickedSeats[index] = value
+				console.log(this.pickedSeats) 
+				console.log("Length of picked seats array: " + this.pickedSeats.length)
 			}
 	},//methods
 
@@ -244,6 +250,29 @@ let vm = new Vue({
 		} // checks if there are selected seats first
 	}
 }) //Vue instance
+
+window.onbeforeunload = function (e) {
+	if (vm.SeatProfile.seats.length > 0)
+	{
+
+		vm.$http.post('/api/seats/update/all/available', {
+			'bus': vm.SeatProfile.bus,
+			'seats': vm.SeatProfile.seats,
+			'dispatch': vm.SeatProfile.dispatch,
+			'_token': vm.SeatProfile._token,
+			'_method': 'PUT'
+		}).then((response) => {
+			// if success
+			console.log('Selected seats are now updated to "Available"');
+		}).catch((error) => {
+			// if failure
+			console.log('Unable to change or update seat statuses');
+			console.log(error);
+		})
+	}
+	return null;
+}; // sets the seat choices into available when picked, in case of sudden refresh and leave of the seat arrangement page.
+
 /* TO DO : Transition effecs, etc etc */
 Vue.transition('fade', {
 	css: false,

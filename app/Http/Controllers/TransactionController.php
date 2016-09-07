@@ -218,6 +218,14 @@ class TransactionController extends Controller
 
     }
 
+    public function manage(Request $request)
+    {
+        $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
+        return view('pages.purchase.manage', compact('title'));
+    }
+
+
+
     public function getBusSeatId($seat, $dispatch)
     {
         $id = Seat::select('BusSeat_Id')

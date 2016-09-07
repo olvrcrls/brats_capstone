@@ -11614,7 +11614,7 @@ var vm = new _vue2.default({
 						alert('You have completed your number of passengers for their seat choices.\n Please press the PROCEED button');
 					} else {
 						event.target.src = 'images/selected_seat.png';
-						alert("The seat is no longer available or open. \n Some another user must have picked that first before you.");
+						alert("The seat is no longer available or open.");
 					}
 			}).catch(function (error) {
 				console.log("Cannot load seat status from server.");
@@ -11714,8 +11714,15 @@ var vm = new _vue2.default({
 			// seat choices must not be duplicated.
 			document.checkOutForm.submit();
 		},
-		optionSelect: function optionSelect(event) {
-			console.log(event.target.id);
+		selectedSeat: function selectedSeat(event) // records and checks if the seat number is already assigned to a passenger
+		{
+			var index = event.target.id - 1;
+			var value = event.target.value;
+			var numberOfChoices = this.choices.length; // total number of choices allowed. determines how many index will pickedSeats have.
+			console.log("Index: " + event.target.id + " Value: " + event.target.value);
+			this.pickedSeats[index] = value;
+			console.log(this.pickedSeats);
+			console.log("Length of picked seats array: " + this.pickedSeats.length);
 		}
 	}, //methods
 
@@ -11740,6 +11747,28 @@ var vm = new _vue2.default({
 		} // checks if there are selected seats first
 	}
 }); //Vue instance
+
+window.onbeforeunload = function (e) {
+	if (vm.SeatProfile.seats.length > 0) {
+
+		vm.$http.post('/api/seats/update/all/available', {
+			'bus': vm.SeatProfile.bus,
+			'seats': vm.SeatProfile.seats,
+			'dispatch': vm.SeatProfile.dispatch,
+			'_token': vm.SeatProfile._token,
+			'_method': 'PUT'
+		}).then(function (response) {
+			// if success
+			console.log('Selected seats are now updated to "Available"');
+		}).catch(function (error) {
+			// if failure
+			console.log('Unable to change or update seat statuses');
+			console.log(error);
+		});
+	}
+	return null;
+}; // sets the seat choices into available when picked, in case of sudden refresh and leave of the seat arrangement page.
+
 /* TO DO : Transition effecs, etc etc */
 _vue2.default.transition('fade', {
 	css: false,

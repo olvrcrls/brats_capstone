@@ -32,13 +32,27 @@
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reserved tickets should be paid <b>before</b> the departure of the said trip. Failure to comply, the reservation will be voided and
-					      the reserved seats will be given oppurtunity to the other commuters inside the terminal.
+						- <!-- Reserved tickets should be paid <b>before</b> the departure of the said trip. Failure to comply, the reservation will be voided and
+					      the reserved seats will be given oppurtunity to the other commuters inside the terminal. -->
+					      Reserved seats should be paid <b>3 days or less</b> after the reservation date. Failure to comply, the reservation of the seats will be voided and these will be opened to other online customers for reservation.
 					</p>
 				</li>
 				<li>
 					<p class="flow-text">
-						- Tickets that are reserved can only be refunded within <b>2 days from the date of the ticket(s) reservation</b>.
+						- Reserved Tickets that are already fully paid / half paid can only be refunded within <b>2 days from the date of the ticket(s) reservation</b>.
+						<br><br>
+						Percentage of refunded money as every day lapse. <br>
+						<ul>
+							<li>
+								> <b class="red-text">100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the reservation date.
+							</li>
+							<li>
+								> <b class="red-text">80%</b> refund money (excluding online service fee) when refunded 1 day after the reservation date.
+							</li>
+							<li>
+								> <b class="red-text">75%</b> refund money (excluding online service fee) when refunded 2 days after the reservation date.
+							</li>
+						</ul>
 					</p>
 				</li>
 				<li>
@@ -49,12 +63,13 @@
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reservations that are half paid, must be paid <b>1 day before the departure date</b> of the reservation else the reservation will be voided.
+						- Reservations that are half paid, must be paid <b>3 days or less after the first installment/payment date</b> of the reservation else the reservation will be voided.
 					</p>
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reserved tickets are transferable but the Payor has the only rights to refund for the reserved tickets.
+						- Reserved tickets are transferable but <b>only the Payor</b> has the only rights to refund for the paid reserved tickets.
+						   He/She must bring his/her <b><i>copy of the E-Voucher with the authorized signature</i></b>, together with his/her receipt if paid to the bus terminal's cashier directly.
 					</p>
 				</li>
 			</ul>

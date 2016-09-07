@@ -297,7 +297,7 @@
 								<td><img src = '/images/taken_seat.png' alt = 'Taken' class="seat-legends"><br>Taken</td>
 								<td><img src = '/images/reserved_seat.png' alt = 'Reserved' class="seat-legends"><br>Reserved</td>
 								<td><img src = '/images/selected_seat.png' alt = 'Selected' class="seat-legends"><br>On Queue</td>
-								<td><img src= '/images/tentative_seat.png' alt= 'Tentative' class="seat-legends"><br>Tentative</td>
+								<td><img src= '/images/tentative_seat.png' alt= 'Tentative' class="seat-legends"><br>Your Selected Seat</td>
 							</tr>
 						</tbody>
 					</table>
@@ -554,7 +554,7 @@
 													</select>
 												</div>
 												<div class="input-field col s4 col m4">
-													<select required id="passengerSeat" name="passengerSeat[]" class="green lighten-1 white-text browser-default"> 
+													<select required id="{{ $i+1 }}" name="passengerSeat[]" class="green lighten-1 white-text browser-default" v-on:click.self="selectedSeat($event)"> 
 														<!-- INSERT INTO CLASS `browser-default` to functon -->
 														<option class="grey-text" selected="" disabled="" value="">Select Bus Seat*</option>
 														<option v-for="choice of choices" value="@{{ choice }}"
@@ -589,7 +589,6 @@
 	</div>
 </div>
 @stop
-
 @section('footer')
 <script type="text/javascript">
 	$(document).ready(function () {
