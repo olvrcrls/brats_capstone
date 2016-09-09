@@ -19,4 +19,5 @@ class trip_type extends Model
  	{
  		return $this->hasMany(route::class, 'Route_Id', 'Route_Id');
  	}
+
 }

@@ -11542,8 +11542,6 @@ var vm = new _vue2.default({
 		/*
    *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
   */
-
-		'seats': [], // array of seat data that are loaded from the initialize method
 		'SeatProfile': { //selected seat by the user for reservation
 			'seats': [],
 			'bustype': null,
@@ -11716,37 +11714,35 @@ var vm = new _vue2.default({
 		},
 		selectedSeat: function selectedSeat(event) // records and checks if the seat number is already assigned to a passenger
 		{
-			var index = event.target.id - 1;
+			var index = event.target.id;
 			var value = event.target.value;
-			var numberOfChoices = this.choices.length; // total number of choices allowed. determines how many index will pickedSeats have.
-			console.log("Index: " + event.target.id + " Value: " + event.target.value);
-			this.pickedSeats[index] = value;
-			console.log(this.pickedSeats);
-			console.log("Length of picked seats array: " + this.pickedSeats.length);
-		}
-	}, //methods
+			var isDuplicate = false; // boolean if duplicate
+			this.pickedSeats[index] = value; // each index represents one passenger
+			var ctr = void 0;
+			var length = this.pickedSeats.length;
+			var output = [];
+			var obj = {};
 
-	Beforedestroy: function Beforedestroy() {
-		// this eliminates the selected seats when the window is closed or refreshed
+			for (ctr = 0; ctr < length; ctr++) {
+				obj[this.pickedSeats[ctr]] = 0;
+			}
 
-		if (this.choices.length > 0) {
-			this.$http.post('/api/seats/update/all/available', {
-				'bus': this.SeatProfile.bus,
-				'seats': this.choices,
-				'dispatch': this.SeatProfile.dispatch,
-				'_token': this.SeatProfile._token,
-				'_method': 'PUT'
-			}).then(function (response) {
-				// if success
-				console.log('Selected seats are now updated to "Available"');
-			}).catch(function (error) {
-				// if failure
-				console.log('Unable to change or update seat statuses');
-				console.log(error);
-			});
-		} // checks if there are selected seats first
-	}
-}); //Vue instance
+			for (ctr in obj) {
+				output.push(ctr);
+			}
+
+			if (this.pickedSeats.length == output.length) {
+				console.log("Different values");
+				console.log(this.pickedSeats);
+				console.log(output);
+			} else {
+				console.log("The same values");
+				event.target.value = "";
+				alert("That seat number has already been picked");
+			}
+		} //selectedSeat
+
+	} }); //Vue instance
 
 window.onbeforeunload = function (e) {
 	if (vm.SeatProfile.seats.length > 0) {

@@ -1,7 +1,7 @@
 @extends('layout')
 @section('content')
 	<div class="container">
-		<h2 class="teal-text"><b>About Us:</b></h2>
+		<h2 class="black-text"><b>About Us <i class="fa fa-users"></i></b></h2>
 		<div class="brats-border">
 		<!-- ERASE THE FOLLOWING TEMPLATE FOR THE BUSINESS INFORMATION -->
 			<p class="flow-text">

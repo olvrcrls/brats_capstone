@@ -221,7 +221,41 @@ class TransactionController extends Controller
     public function manage(Request $request)
     {
         $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
-        return view('pages.purchase.manage', compact('title'));
+        return view('pages.purchase.manage', compact('title', 'routes'));
+    }
+
+    public function retrieve(Request $request)
+    {
+        $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
+        $customer = OnlineCustomer::select('OnlineCustomer_Id', 'TravelDispatch_Id')
+                                    ->join('purchase', 'purchase.Purchase_Id', '=', 'onlinecustomer.Purchase_Id')
+                                    ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
+                                    ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
+                                    ->get(); // checks the online customer with the correct last name & transaction reference number
+        if (!$customer->count())
+        {
+            return back(); // returns to input page with error message.
+        }
+
+        if ($request->purchaseRequest == 'voucher')
+        {
+            return 'voucher';
+        }
+
+        else if ($request->purchaseRequest == 'check')
+        {
+            return 'check';
+        }
+
+        else if ($request->purchaseRequest == 'cancel')
+        {
+            return 'cancel';
+        }
+
+        else { return back(); }
+
+
+        return view('pages.purchase.manage_retrieve', compact('title'));
     }
 
 

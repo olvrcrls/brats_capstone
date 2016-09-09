@@ -21,7 +21,11 @@
         <link rel="stylesheet" href="/css/layouts/app.css">
         <script type="text/javascript" src="/js/jquery.js"></script>
         <script type="text/javascript" src="/materialize/js/materialize.js"></script>
-        
+        <script type="text/javascript">
+            $( document ).ready(function(){
+                $(".button-collapse").sideNav();
+            });
+        </script>
         @yield('head')
 </head>
 <body class="blue-grey lighten-5"> 

@@ -31,6 +31,7 @@ Route::get('/transaction/voucher/{purchase}/transaction/{customer}/viewprint', '
 Route::get('/voucher/save/{purchase}/{customer}/VoucherPDF', 'EmailController@save');
 Route::get('/voucher/print/{purchase}/{customer}/VoucherPDF', 'EmailController@printDocument');
 Route::get('/manage/trip', 'TransactionController@manage');
+Route::post('/manage/trip/retrieve', 'TransactionController@retrieve');
 
 
 

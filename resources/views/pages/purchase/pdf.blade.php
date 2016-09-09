@@ -90,24 +90,24 @@
 								<table>
 									<tr>
 										<td align="center" class="center">
-											________________________________________________
+											
 										</td>
 										<td align="center" class="center">
-											________________________________________________
+											
 										</td>
-										<td align="center" class="center">
+										<td align="left" class="left">
 											______________________________________________
 										</td>
 									</tr>
 									<tr>
 										<td class='center' align='center'>
-											<b>Approved By</b>
+											
 										</td>
 										<td class='center' align='center'>
-											<b>Paid By</b>
+											
 										</td>
-										<td class='center' align='center'>
-											<b>Signature</b>
+										<td class='left' align='left'>
+											<b>Authorized Personnel Signature</b>
 										</td>
 									</tr>
 								</table>

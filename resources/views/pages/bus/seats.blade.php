@@ -554,7 +554,8 @@
 													</select>
 												</div>
 												<div class="input-field col s4 col m4">
-													<select required id="{{ $i+1 }}" name="passengerSeat[]" class="green lighten-1 white-text browser-default" v-on:click.self="selectedSeat($event)"> 
+													<!-- <input type="text" name="passengerSeat[]" disabled value="@{{ choices[counter] }}"/> -->
+													 <select required id="{{ $i }}" name="passengerSeat[]" class="green lighten-1 white-text browser-default" v-on:click.self="selectedSeat($event)"> 
 														<!-- INSERT INTO CLASS `browser-default` to functon -->
 														<option class="grey-text" selected="" disabled="" value="">Select Bus Seat*</option>
 														<option v-for="choice of choices" value="@{{ choice }}"
@@ -562,7 +563,7 @@
 														>
 															Seat Number: @{{ choice }}
 														</option>
-													</select>
+													</select> 
 													<!-- <label class="white-text" for="passengerSeat">Seat Number:</label> -->
 												</div>
 											</div>

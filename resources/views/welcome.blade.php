@@ -21,8 +21,7 @@
                             <form method = "POST" action = "{{ url('/travel_schedules') }}" id = "find_travel_form">
                                 {{ csrf_field() }}
                                 <div class = "row">
-                                    <div class="input-field col s12" id="divTravelDate" 
-                                    >
+                                    <div class="input-field col s12" id="divTravelDate">
                                         <input type="date" id="travel_date" class="datepicker" name = "travel_date">
                                         <label for="travel_date" >Travel Date <i class="fa fa-btn fa-calendar"></i>: </label>
                                     </div>

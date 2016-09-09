@@ -23,8 +23,6 @@ let vm = new Vue({
 		/*
 		 *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
 		*/
-
-		'seats': [], // array of seat data that are loaded from the initialize method
 		'SeatProfile': { //selected seat by the user for reservation
 				'seats': [],
 				'bustype': null,
@@ -217,38 +215,41 @@ let vm = new Vue({
 
 			selectedSeat(event) // records and checks if the seat number is already assigned to a passenger
 			{
-				let index = (event.target.id) - 1
+				let index = (event.target.id)
 				let value = (event.target.value)
-				let numberOfChoices = this.choices.length // total number of choices allowed. determines how many index will pickedSeats have.
-				console.log("Index: " + event.target.id + " Value: " + event.target.value)
-				this.pickedSeats[index] = value
-				console.log(this.pickedSeats) 
-				console.log("Length of picked seats array: " + this.pickedSeats.length)
-			}
-	},//methods
+				let isDuplicate = false // boolean if duplicate
+				this.pickedSeats[index] = value // each index represents one passenger
+				let ctr
+				let length = this.pickedSeats.length
+				let output = []
+				let obj = {}
 
-	Beforedestroy()
-	{
-		// this eliminates the selected seats when the window is closed or refreshed
+				for (ctr = 0; ctr < length; ctr++)
+				{
+					obj[this.pickedSeats[ctr]] = 0
+				}
 
-		if (this.choices.length > 0)
-		{
-			this.$http.post('/api/seats/update/all/available', {
-				'bus': this.SeatProfile.bus,
-				'seats': this.choices,
-				'dispatch': this.SeatProfile.dispatch,
-				'_token': this.SeatProfile._token,
-				'_method': 'PUT'
-			}).then(response => {
-				// if success
-				console.log('Selected seats are now updated to "Available"')
-			}).catch(error => {
-				// if failure
-				console.log('Unable to change or update seat statuses')
-				console.log(error)
-			})
-		} // checks if there are selected seats first
-	}
+				for ( ctr in obj )
+				{
+					output.push(ctr)
+				}
+
+				if (this.pickedSeats.length == output.length)
+				{
+					console.log("Different values")
+					console.log(this.pickedSeats)
+					console.log(output)
+				}
+
+				else
+				{
+					console.log("The same values")
+					event.target.value = ""
+					alert("That seat number has already been picked")
+				}
+				
+			} //selectedSeat
+	},//methods	
 }) //Vue instance
 
 window.onbeforeunload = function (e) {

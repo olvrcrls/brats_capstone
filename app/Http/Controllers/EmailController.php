@@ -186,23 +186,19 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
+                                        ________________________________
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>
@@ -373,10 +369,8 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
                                         _____________________________
@@ -384,12 +378,10 @@ class EmailController extends Controller
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>
@@ -593,23 +585,19 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
+                                        ________________________________
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>
@@ -780,23 +768,19 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
+                                        ________________________________
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>
@@ -988,10 +972,8 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
                                         _____________________________
@@ -999,12 +981,10 @@ class EmailController extends Controller
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>
@@ -1175,23 +1155,19 @@ class EmailController extends Controller
                             <table width='100%'>
                                 <tr>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
                                     </td>
                                     <td>
-                                        _____________________________
+                                        ________________________________
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align='center'>
-                                        <b>Received By</b>
                                     </td>
                                     <td align='center'>
-                                        <b>Paid By</b>
                                     </td>
-                                    <td align='center'>
+                                    <td align='left'>
                                         <b>Authorized Personnel Signature</b>
                                     </td>
                                 </tr>

@@ -44,13 +44,13 @@
 						Percentage of refunded money as every day lapse. <br>
 						<ul>
 							<li>
-								> <b class="red-text">100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the reservation date.
+								> <b class="red-text">100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the payment date.
 							</li>
 							<li>
-								> <b class="red-text">80%</b> refund money (excluding online service fee) when refunded 1 day after the reservation date.
+								> <b class="red-text">80%</b> refund money (excluding online service fee) when refunded 1 day after the payment date.
 							</li>
 							<li>
-								> <b class="red-text">75%</b> refund money (excluding online service fee) when refunded 2 days after the reservation date.
+								> <b class="red-text">75%</b> refund money (excluding online service fee) when refunded 2 days after the payment date.
 							</li>
 						</ul>
 					</p>
