@@ -78,6 +78,7 @@ let vm = new Vue({
 									_token: this.SeatProfile._token
 								}).then(response => {
 									//if success
+									console.log(response)
 									event.target.src = 'images/tentative_seat.png'
 									this.SeatProfile.seats.push(seatNumber)
 									this.passengers_left -= 1
@@ -91,7 +92,7 @@ let vm = new Vue({
 								alert('You have completed your number of passengers for their seat choices.\n Please press the PROCEED button')
 							}
 						}// checks if the seat status is available or open for reservation
-						else if (indexSelected >= 0 && (seatStatus == 'Tentative' || seatStatus == 'tentative'))
+						else if (indexSelected >= 0 && (seatStatus == 'On Queue' || seatStatus == 'on queue' || seatStatus == 'Tentative' || seatStatus == 'tentative'))
 						{
 							this.unreserve(event)
 						}
@@ -217,7 +218,6 @@ let vm = new Vue({
 			{
 				let index = (event.target.id)
 				let value = (event.target.value)
-				let isDuplicate = false // boolean if duplicate
 				this.pickedSeats[index] = value // each index represents one passenger
 				let ctr
 				let length = this.pickedSeats.length
@@ -233,17 +233,16 @@ let vm = new Vue({
 				{
 					output.push(ctr)
 				}
+				// if (this.pickedSeats.length == output.length)
+				// {
+				// 	console.log("Different values")
+				// 	console.log(this.pickedSeats)
+				// 	console.log(output)
+				// }
 
-				if (this.pickedSeats.length == output.length)
+				if (this.pickedSeats.length != output.length)
 				{
-					console.log("Different values")
-					console.log(this.pickedSeats)
-					console.log(output)
-				}
-
-				else
-				{
-					console.log("The same values")
+				//	console.log("The same values")
 					event.target.value = ""
 					alert("That seat number has already been picked")
 				}

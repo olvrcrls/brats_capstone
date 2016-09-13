@@ -33,7 +33,7 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date_format(date_sub(date_create($dispatch[0]->TravelDispatch_Date), date_interval_create_from_date_string("1 day")), 'm/d/Y');
+    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */
@@ -432,7 +432,7 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date_format(date_sub(date_create($dispatch[0]->TravelDispatch_Date), date_interval_create_from_date_string("1 day")), 'm/d/Y');
+    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF OUTPUT
     	 */
@@ -819,7 +819,7 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date_format(date_sub(date_create($dispatch[0]->TravelDispatch_Date), date_interval_create_from_date_string("1 day")), 'm/d/Y');
+    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */
@@ -1193,11 +1193,11 @@ class EmailController extends Controller
     // -> added to model for shortcut
     public function getOnlineFee()
     {
-        $fee = OnlineFee::select('OnlineReservationFee_Amount')
-                        ->orderBy('OnlineReservationFee_Id', 'desc')
+        $fee = OnlineFee::select('ReservationFee_Amount')
+                        ->orderBy('ReservationFee_Id', 'desc')
                         ->take(1)
                         ->get();
 
-        return $fee[0]->OnlineReservationFee_Amount;
+        return $fee[0]->ReservationFee_Amount;
     }
 }

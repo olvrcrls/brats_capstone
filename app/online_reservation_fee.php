@@ -8,12 +8,12 @@ class online_reservation_fee extends Model
 {
     public $timestamps = false;
     public $primaryKey = 'OnlineReservationFee_Id';
-    public $table = 'onlinereservationfee';
+    public $table = 'reservationfee';
 
     public function getOnlineFee()
     {
-        $fee = App\online_reservation_fee::select('OnlineReservationFee_Amount')
-                        ->orderBy('OnlineReservationFee_Id', 'desc')
+        $fee = App\online_reservation_fee::select('ReservationFee_Amount')
+                        ->orderBy('ReservationFee_Id', 'desc')
                         ->take(1)
                         ->get();
 

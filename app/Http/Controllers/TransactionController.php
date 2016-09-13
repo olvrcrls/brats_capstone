@@ -22,6 +22,8 @@ use App\payment as Payment;
 use App\payment_status as PaymentStatus;
 use App\payment_history as PaymentHistory;
 use App\travel_dispatch as Dispatch;
+use App\reserve_cancellation_percentage as Percentage;
+use App\reserve_cancellation as Cancellation;
 
 class TransactionController extends Controller
 {
@@ -103,12 +105,12 @@ class TransactionController extends Controller
         $title = "Review Transaction - Bus Reservation And Ticketing System";
         $passengers = [];
         $fares = DB::select("CALL GetFareMatrixTable($request->bustype_id, $request->route_id)") ;
-        $fee = DB::table('onlinereservationfee')
-                        ->select('OnlineReservationFee_Amount')
-                        ->orderBy('OnlineReservationFee_Id', 'desc')
+        $fee = DB::table('reservationfee')
+                        ->select('ReservationFee_Amount')
+                        ->orderBy('ReservationFee_Id', 'desc')
                         ->take(1)
                         ->get();
-        $onlineFee = $fee[0]->OnlineReservationFee_Amount;                
+        $onlineFee = $fee[0]->ReservationFee_Amount;                
         for($i = 0; $i < $request->totalPassengers; $i++) {
             $objPassenger = new\stdClass;
             $objPassenger->destinationId = $request->passengerDestination[$i];
@@ -124,7 +126,10 @@ class TransactionController extends Controller
             $objPassenger->seatNumber = $request->passengerSeat[$i];
             $passengers[$i] = $objPassenger;
         }//for
-        return view('pages.purchase.iterate', compact('request', 'totalFarePrice', 'passengers', 'title', 'onlineFee'));
+        $percentages = Percentage::select('ReserveCancellationPercentage_NumberOfDays', 'ReserveCancellationPercentage_PercentageReturn')
+                              ->get();
+        $totalDays = Percentage::count();
+        return view('pages.purchase.iterate', compact('request', 'totalFarePrice', 'passengers', 'title', 'onlineFee', 'percentages', 'totalDays'));
     }
 
     public function store(Request $request)
@@ -221,43 +226,218 @@ class TransactionController extends Controller
     public function manage(Request $request)
     {
         $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
-        return view('pages.purchase.manage', compact('title', 'routes'));
+        return view('pages.purchase.manage', compact('title'));
     }
 
     public function retrieve(Request $request)
     {
         $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
-        $customer = OnlineCustomer::select('OnlineCustomer_Id', 'TravelDispatch_Id')
-                                    ->join('purchase', 'purchase.Purchase_Id', '=', 'onlinecustomer.Purchase_Id')
-                                    ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
-                                    ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
-                                    ->get(); // checks the online customer with the correct last name & transaction reference number
-        if (!$customer->count())
+        
+        // checks first if the request is valid.
+        if ($request->purchaseRequest == 'voucher' || $request->purchaseRequest == 'check' || $request->purchaseRequest == 'cancel')
         {
-            return back(); // returns to input page with error message.
-        }
+            if ($request->purchaseRequest  == 'voucher') // checks if the request service is E-Voucher retrieval
+            {
+                $customerInformation = OnlineCustomer::select('OnlineCustomer_Id', 'TravelDispatch_Id', 'onlinecustomer.Purchase_Id','Purchase_Date',
+                                                            'OnlineCustomer_FirstName', 'OnlineCustomer_LastName')
+                                        ->join('purchase', 'purchase.Purchase_Id', '=', 'onlinecustomer.Purchase_Id')
+                                        ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
+                                        ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
+                                        ->orderBy('OnlineCustomer_Id', 'desc')
+                                        ->get(); // checks the online customer with the correct last name & transaction reference number
 
-        if ($request->purchaseRequest == 'voucher')
-        {
-            return 'voucher';
-        }
+                if (!$customerInformation->count())
+                {
+                    $status = "There is no such booked transaction found.";
+                    return view('pages.purchase.manage', compact('title', 'status'));
+                } // checks if there is such transaction is found.
 
-        else if ($request->purchaseRequest == 'check')
-        {
-            return 'check';
-        }
+                $today = date('m/d/Y');
+                $purchaseDate = date_format(date_create($customerInformation[0]->Purchase_Date), 'm/d/Y'); // converts into Month/Day/Year of the purchaseDate
+                $expireDate = date('m/d/Y', strtotime($purchaseDate. '+ 3 days')); // computes the expiration date
 
-        else if ($request->purchaseRequest == 'cancel')
-        {
-            return 'cancel';
-        }
+                $customer = new\stdClass;
+                $customer->OnlineCustomer_Id = $customerInformation[0]->OnlineCustomer_Id;
+                $customer->Purchase_Id = $customerInformation[0]->Purchase_Id;
+                $customer->name = $customerInformation[0]->OnlineCustomer_FirstName.' '.$customerInformation[0]->OnlineCustomer_LastName;
+                if ($today > $expireDate)
+                {
+                    $customer->expired = true;
+                } // checks if the voucher is already expired.
+                return view('pages.purchase.manage_retrieve', compact('title', 'customer'));
+            }
 
-        else { return back(); }
+            else if ($request->purchaseRequest == 'check')
+            {
+                $infos = OnlineCustomer::select('OnlineCustomer_Id', 'onlinecustomer.Purchase_Id'
+                                                    ,'Passenger_FirstName', 'Passenger_MiddleName', 'Passenger_LastName',
+                                                                 'routepathways.RoutePathWays_Place', 'paymentstatus.PaymentStatus_Name',
+                                                                 'route.Route_Name', 'traveldispatch.TravelDispatch_Date', 'travelschedule.TravelSchedule_Time', 'passengerticket.PassengerTicket_Id',
+                                                                 'OnlineCustomer_FirstName', 'OnlineCustomer_MiddleName', 'OnlineCustomer_LastName',
+                                                                 'bus.Bus_Id', 'BusType_Name', 'bus.Bus_PlateNumber', 'busstatus.BusStatus_Name',
+                                                                 'purchase.Purchase_Date', 'purchase.Purchase_TotalPrice', 'PassengerTicket_Price'
+                                                                 )
+                                                        ->join('purchase', 'onlinecustomer.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                                        ->join('passengerticket', 'passengerticket.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                                        ->join('passenger', 'passengerticket.PassengerTicket_Id', '=', 'passenger.PassengerTicket_Id')
+                                                        ->join('routepathways', 'routepathways.RoutePathWays_Id', '=', 'passengerticket.RoutePathWays_Id')
+                                                        ->join('payment', 'payment.Purchase_Id', '=', 'onlinecustomer.Purchase_Id')
+                                                        ->join('paymentstatus', 'payment.PaymentStatus_Id', '=', 'paymentstatus.PaymentStatus_Id')
+                                                        ->join('traveldispatch', 'purchase.TravelDispatch_Id', '=', 'traveldispatch.TravelDispatch_Id')
+                                                        ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
+                                                        ->join('route', 'route.Route_Id', '=', 'travelschedule.Route_Id')
+                                                        ->join('bus', 'bus.Bus_Id', '=', 'traveldispatch.Bus_Id')
+                                                        ->join('bustype', 'bus.BusType_Id', '=', 'bustype.BusType_Id')
+                                                        ->join('busstatus', 'bus.BusStatus_Id', '=', 'busstatus.BusStatus_Id')
+                                                        ->where('purchase.PurchaseType_Id', '=', PurchaseType::getId('Online'))
+                                                        ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
+                                                        ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
+                                                        ->get();
+                if (!$infos->count())
+                {
+                    $status = "There is no such booked transaction found.";
+                    return view('pages.purchase.manage', compact('title', 'status'));
+                }// checks if there is such transaction is found.
+                else
+                    return view('pages.purchase.manage_check', compact('title', 'infos'));
+            }
+            else if ($request->purchaseRequest == 'cancel')
+            { 
+                 $purchase = OnlineCustomer::select('OnlineCustomer_Id', 'onlinecustomer.Purchase_Id', 'purchase.Purchase_Date', 'PaymentStatus_Name', 'paymenthistory.PaymentHistory_Date', 'route.Route_Name', 'bus.Bus_Id', 'bus.Bus_PlateNumber', 'busstatus.BusStatus_Name', 'bustype.BusType_Name', 'purchase.Purchase_TotalPrice', 'onlinecustomer.Purchase_Id')
+                                            ->join('purchase', 'onlinecustomer.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                            ->join('payment', 'payment.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                            ->join('paymentstatus', 'payment.PaymentStatus_Id', '=', 'paymentstatus.PaymentStatus_Id')
+                                            ->join('paymenthistory', 'paymenthistory.Payment_Id', '=', 'payment.Payment_Id')
+                                            ->join('traveldispatch', 'traveldispatch.TravelDispatch_Id', '=', 'purchase.TravelDispatch_Id')
+                                            ->join('travelschedule', 'travelschedule.TravelSchedule_Id', '=', 'traveldispatch.TravelSchedule_Id')
+                                            ->join('route', 'route.Route_Id', '=', 'travelschedule.Route_Id')
+                                            ->join('bus', 'bus.Bus_Id', '=', 'traveldispatch.Bus_Id')
+                                            ->join('bustype', 'bus.BusType_Id', '=', 'bustype.BusType_Id')
+                                            ->join('busstatus', 'busstatus.BusStatus_Id', '=', 'bus.BusStatus_Id')
+                                            ->where('purchase.PurchaseType_Id', '=', PurchaseType::getId('Online'))
+                                            ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
+                                            ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
+                                            ->orderBy('paymenthistory.Payment_Id', 'desc')
+                                            ->take(1)
+                                            ->get();
+                if (!$purchase->count())
+                {
+                    $status = "There is no such booked transaction found.";
+                    return view('pages.purchase.manage', compact('title', 'status'));
+                }
+                // check first if cancellation can be done.
+                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $purchase[0]->Purchase_Id);
 
+                if($isCancelled->count() > 0)
+                {
+                    $status = "This transaction has already requested a cancellation or refund.";
+                    return view('pages.purchase.manage', compact('title', 'status'));
+                }
 
-        return view('pages.purchase.manage_retrieve', compact('title'));
+                else
+                {
+                    $today = date('Y-m-d');
+                    $today = new\DateTime($today); //parsing to Date Time
+                    $total_num_of_days = Percentage::count(); // total number of days before the transaction is forfeited
+
+                    if ($purchase[0]->PaymentStatus_Name == 'Unpaid' || $purchase[0]->PaymentStatus_Name == 'unpaid')
+                    {
+                        $parsePurchaseDate = date_format(date_create($purchase[0]->Purchase_Date), 'Y-m-d');
+                        $parsePurchaseDate = new\DateTime($parsePurchaseDate);
+                        $difference = $parsePurchaseDate->diff($today); // finding the difference between the date today and the date reserved
+                        if ($difference->days > $total_num_of_days)
+                        {
+                            $status = "Sorry but your transaction cannot be cancelled anymore.";
+                            return view('pages.purchase.manage', compact('title', 'status'));
+                        }
+                        else
+                            return view('pages.purchase.manage_cancel', compact('title', 'purchase'));
+                    } // if unpaid
+
+                    else if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid' ||
+                             $purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid')
+                    {
+                        $parsePaymentDate = date_format(date_create($purchase[0]->PaymentHistory_Date), 'Y-m-d');
+                        $parsePaymentDate = new\DateTime($parsePaymentDate);
+                        $difference = $parsePaymentDate->diff($today);
+                        if ($difference->days > $total_num_of_days)
+                        {
+                            $status = "Sorry but your transaction cannot be cancelled anymore.";
+                            return view('pages.purchase.manage', compact('title', 'status'));
+                        }
+                        else
+                            return view('pages.purchase.manage_cancel', compact('title', 'purchase'));
+                    } // if fully paid or partially paid
+                    
+                }
+            }
+        } // checks if the user has valid request
+
+        else 
+        { 
+            $status = "Invalid request of the user.";
+            return view('pages.purchase.manage', compact('title', 'status')); 
+        } // redirects back if invalid request
+
     }
 
+    public function cancel(Request $request)
+    {
+        $this->validate($request, [
+                'cancelReason' => 'required',
+                'purchaseDate' => 'required',
+                'purchaseId' => 'required'
+            ]);
+
+        $datetimeOfCancellation = date('Y-m-d h:i:s');
+        $dateOfCancellation = date('Y-m-d');
+        $parseDateOfCancellation = new\DateTime($dateOfCancellation);
+        $parseDateOfPurchase = new\DateTime($request->purchaseDate);
+        $difference = $parseDateOfPurchase->diff($parseDateOfCancellation); // gets the difference in days between the date of reservation and date of cancellation.
+
+        $reason = $request->cancelReason;
+        if (isset($request->cancelReasonText))
+        {
+            $reason = $request->cancelReasonText;
+        } // if the chosen option is 'Other' then the statement of reason is required.
+
+        if ($difference->days < 1)
+            $elapseDays = 1;
+        else
+            $elapseDays = $difference->days + 1;
+        try
+        {
+            // return $request->all();
+            $rate = Percentage::select('ReserveCancellationPercentage_Id','ReserveCancellationPercentage_PercentageReturn')
+                                ->where('ReserveCancellationPercentage_NumberOfDays', '=', $elapseDays)
+                                ->get();
+            $purchasePrice = Purchase::select('Purchase_TotalPrice')
+                                        ->where('Purchase_Id', '=', $request->purchaseId)
+                                        ->get();
+            $price = $purchasePrice[0]->Purchase_TotalPrice;
+            $rate_id = $rate[0]->ReserveCancellationPercentage_Id;
+            $rate = $rate[0]->ReserveCancellationPercentage_PercentageReturn / 100;
+            $totalRefundMoney = ($price * $rate);
+
+            Cancellation::insert([
+                'ReserveCancellation_Reason' => $reason,
+                'ReserveCancellation_AmountReturn' => $totalRefundMoney,
+                'Purchase_Id' => $request->purchaseId,
+                'ReserveCancellationPercentage_Id' => $rate_id,
+                'ReserveCancellation_Status' => 'Pending',
+                'ReserveCancellation_DateOfCancelation' => $datetimeOfCancellation
+            ]);
+
+            $title = "Cancellation Request - Bus Reservation And Ticketing System";
+            $successCancellation = "Your request for cancellation has been sent!";
+            return view('pages.purchase.manage', compact('title', 'successCancellation'));
+        }
+        catch (Exception $e)
+        {
+            return back();
+        }
+
+    }
 
 
     public function getBusSeatId($seat, $dispatch)
@@ -281,12 +461,12 @@ class TransactionController extends Controller
 
     public function getOnlineFee()
     {
-        $fee = OnlineFee::select('OnlineReservationFee_Amount')
-                        ->orderBy('OnlineReservationFee_Id', 'desc')
+        $fee = OnlineFee::select('ReservationFee_Amount')
+                        ->orderBy('ReservationFee_Id', 'desc')
                         ->take(1)
                         ->get();
 
-        return $fee[0]->OnlineReservationFee_Amount;
+        return $fee[0]->ReservationFee_Amount;
     }
 
     public function getPaymentStatus($name)

@@ -11,7 +11,7 @@
 |
 */
 
-
+use App\reserve_cancellation_percentage as Percentage;
 
 Route::get('/', 'HomeController@index');
 Route::get('/about', function () {
@@ -22,7 +22,11 @@ Route::post('/travel_schedules', 'ScheduleController@show');
 Route::get('/routes', 'RouteController@index');
 Route::get('/route/{route}', 'ScheduleController@route_show');
 Route::get('/bus/passengers/terms_and_agreement', function () {
-	return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System']);
+	$percentages = Percentage::select('ReserveCancellationPercentage_NumberOfDays', 'ReserveCancellationPercentage_PercentageReturn')
+							  ->get();
+	$totalDays = Percentage::count();
+	return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System', 'percentages' => $percentages,
+									  'totalDays' => $totalDays ]);
 });
 Route::post('/book_seats', 'TransactionController@input');
 Route::post('/book_seats/iterate', 'TransactionController@view');
@@ -31,7 +35,8 @@ Route::get('/transaction/voucher/{purchase}/transaction/{customer}/viewprint', '
 Route::get('/voucher/save/{purchase}/{customer}/VoucherPDF', 'EmailController@save');
 Route::get('/voucher/print/{purchase}/{customer}/VoucherPDF', 'EmailController@printDocument');
 Route::get('/manage/trip', 'TransactionController@manage');
-Route::post('/manage/trip/retrieve', 'TransactionController@retrieve');
+Route::post('/manage/trip/retrieve', 'TransactionController@retrieve')->middleware('web');
+Route::post('/manage/trip/cancel/request', 'TransactionController@cancel');
 
 
 

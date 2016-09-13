@@ -41,8 +41,9 @@ class SeatController extends Controller
                       ->where('Bus_Id', '=', $request->bus)
                       ->where('TravelDispatch_Id', '=', $request->dispatch)
                       ->get();
-        $seat[0]->BusSeatStatus_Id = $this->getSeatTentativeId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+        $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
         $seat[0]->save(); // updates the seat status of a seat
+        return $this->getSeatQueueId();
     }
 
     public function ajaxUpdate_queue(Request $request)
@@ -55,12 +56,6 @@ class SeatController extends Controller
             $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
             $seat[0]->save(); // updates the seat status of a seat
         }      
-        // $seat = Seat::where('BusSeat_Number', '=', $request->seat_number)
-        //               ->where('Bus_Id', '=', $request->bus)
-        //               ->where('TravelDispatch_Id', '=', $request->dispatch)
-        //               ->get();
-        // $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
-        // $seat[0]->save(); // updates the seat status of a seat
     }
 
     public function ajaxUpdate_unqueue(Request $request)
@@ -93,7 +88,7 @@ class SeatController extends Controller
                       ->where('Bus_Id', '=', $request->bus)
                       ->where('TravelDispatch_Id', '=', $request->dispatch)
                       ->get();
-            $seat[0]->BusSeatStatus_Id = $this->getSeatTentativeId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
+            $seat[0]->BusSeatStatus_Id = $this->getSeatQueueId(); // can also use model's function Seat::getBusSeatStatusId('statusName')
             $seat[0]->save(); // updates the seat status of a seat
         }    
     }
@@ -105,14 +100,6 @@ class SeatController extends Controller
                       ->orWhere('BusSeatStatus_Name', '=', 'Available')
                       ->get(); // getting dynamic the BusSeatStatus_Id of the `Queued` seat
         return $id[0]->BusSeatStatus_Id;
-    }
-
-    private function getSeatTentativeId()
-    {
-        $id = Status::select('BusSeatStatus_Id')
-                      ->where('BusSeatStatus_Name', '=', 'Tentative')
-                      ->get();
-        return $id[0]->BusSeatStatus_Id; // getting dynamic BusSeatStatus_Id of the 'Tentative' seat
     }
 
     private function getSeatQueueId()

@@ -34,24 +34,26 @@
 					<p class="flow-text">
 						- <!-- Reserved tickets should be paid <b>before</b> the departure of the said trip. Failure to comply, the reservation will be voided and
 					      the reserved seats will be given oppurtunity to the other commuters inside the terminal. -->
-					      Reserved seats should be paid <b>3 days or less</b> after the reservation date. Failure to comply, the reservation of the seats will be voided and these will be opened to other online customers for reservation.
+					      Reserved seats should be paid <b>{{ $totalDays }} days or less</b> after the reservation date. Failure to comply, the reservation of the seats will be voided and these will be opened to other online customers for reservation.
 					</p>
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reserved Tickets that are already fully paid / half paid can only be refunded within <b>2 days from the date of the ticket(s) reservation</b>.
+						- Reserved Tickets that are already fully paid / half paid can only be refunded within <b>{{ $totalDays }} days from the date of the ticket(s) reservation</b>.
 						<br><br>
 						Percentage of refunded money as every day lapse. <br>
 						<ul>
+							@foreach ($percentages as $percentage)
 							<li>
-								> <b class="red-text">100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the payment date.
+								<b class="red-text"> > {{ $percentage->ReserveCancellationPercentage_PercentageReturn }}%</b>
+								 refund money of the total price when refunded 
+								 @if ($percentage->ReserveCancellationPercentage_NumberOfDays <= 1)
+								 	less than 24 hours from the payment date.
+								 @else
+								 	{{ $percentage->ReserveCancellationPercentage_NumberOfDays }} after the payment date.
+								 @endif
 							</li>
-							<li>
-								> <b class="red-text">80%</b> refund money (excluding online service fee) when refunded 1 day after the payment date.
-							</li>
-							<li>
-								> <b class="red-text">75%</b> refund money (excluding online service fee) when refunded 2 days after the payment date.
-							</li>
+							@endforeach
 						</ul>
 					</p>
 				</li>
@@ -63,7 +65,7 @@
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reservations that are half paid, must be paid <b>3 days or less after the first installment/payment date</b> of the reservation else the reservation will be voided.
+						- Reservations that are still unpaid, must be half-paid or fullypaid <b>3 days or less after the reservation date</b> of the reservation else the reservation will be voided.
 					</p>
 				</li>
 				<li>

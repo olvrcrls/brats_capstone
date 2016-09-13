@@ -37,14 +37,14 @@
                     <li><a class="black-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
                     <li><a class="black-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>                    
                     <li><a class="black-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
-                    <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li>
+                    <!-- <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li> -->
                     <li><a class="black-text" href="{{ url('/about') }}"><i class="fa fa-users"></i> About Us</a></li>
                 </ul>
                 <ul class="side-nav" id="mobile-demo">
                     <li><a class="black-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
                     <li><a class="black-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>
                     <li><a class="black-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
-                    <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li>
+                    <!-- <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li> -->
                     <li><a class="black-text" href="{{ url('/about') }}"><i class="fa fa-users"></i> About Us</a></li>
                 </ul>
             </div>
@@ -65,7 +65,7 @@
                             <li><a class="white-text" href="#!">Route & Schedule Details</a></li>
                             <li><a class="white-text" href="{{ url('/') }}">Schedule A Trip</a></li>
                             <li><a class="white-text" href="{{ url('/manage/trip') }}">Manage Booked Trip</a></li>
-                            <li><a class="white-text" href="{{ url('/contact') }}">Contact Us</a></li>
+                            <!-- <li><a class="white-text" href="{{ url('/contact') }}">Contact Us</a></li> -->
                             <li><a class="white-text" href="{{ url('/about') }}">About Us</a></li>
                         </ul>
                     </div>

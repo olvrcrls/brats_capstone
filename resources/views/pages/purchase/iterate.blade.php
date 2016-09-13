@@ -88,19 +88,21 @@
 							<p><b>C.</b> Be at the terminal for atleast <b>30 minutes</b> before the departure time. Your reserved seats will be given to those who can accomodate, if the reserved passengers will be late.</p>
 						</li>
 						<li>
-							<p><b>D.</b> - Reserved Tickets that are already fully paid / half paid can only be refunded within <b>2 days from the date of the ticket(s) reservation</b>.
+							<p><b>D.</b> Reserved Tickets that are already fully paid / half paid can only be refunded within <b>{{ $totalDays }} days from the date of the ticket(s) reservation</b>.
 							<br><br>
 						Percentage of refunded money as every day lapse. <br>
 						<ul>
+							@foreach ($percentages as $percentage)
 							<li>
-								> <b>100%</b> refund money (excluding online service fee) when refunded less than 24 hours from the reservation date.
+								<b class="red-text"> > {{ $percentage->ReserveCancellationPercentage_PercentageReturn }}%</b>
+								 refund money of the total price when refunded 
+								 @if ($percentage->ReserveCancellationPercentage_NumberOfDays <= 1)
+								 	less than 24 hours from the payment date.
+								 @else
+								 	{{ $percentage->ReserveCancellationPercentage_NumberOfDays }} after the payment date.
+								 @endif
 							</li>
-							<li>
-								> <b>80%</b> refund money (excluding online service fee) when refunded 1 day after the reservation date.
-							</li>
-							<li>
-								> <b>75%</b> refund money (excluding online service fee) when refunded 2 days after the reservation date.
-							</li>
+							@endforeach
 						</ul></p>
 						</li>
 						<li>

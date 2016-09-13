@@ -5,7 +5,7 @@
 		<div class="brats-border">
 		<!-- ERASE THE FOLLOWING TEMPLATE FOR THE BUSINESS INFORMATION -->
 			<p class="flow-text">
-				Bus Reservation And Ticketing System is Capstone project that are authored by:
+				Bus Reservation And Ticketing System is Capstone project that is authored by:
 			</p>
 				<ul class="flow-text">
 					<li>

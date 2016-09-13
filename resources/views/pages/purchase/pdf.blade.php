@@ -118,7 +118,7 @@
 									<b><i>Instructions </i>:</b>
 									<br><br>
 									<i>
-										This is your copy. Keep this in a safe place. This document valid until <b>{{ date_format(date_sub(date_create($dispatch[0]->TravelDispatch_Date), date_interval_create_from_date_string("1 day")), 'm/d/Y') }}</b>
+										This is your copy. Keep this in a safe place. This document valid until <b>{{ date('m/d/Y', time() + 259200) }}</b>
 										<br><br>
 
 										If you are half-paid the teller will indicate to your copy of your installment in the remarks field.

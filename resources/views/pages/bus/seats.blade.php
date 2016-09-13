@@ -84,17 +84,7 @@
 											@if (($ctrRow % $seating->rowPerColumn) == 0)
 												</tr>
 											@endif
-									@elseif ($seat->BusSeatStatus_Name == 'Tentative' || $seat->BusSeatStatus_Name == 'tentative')
-											<td>
-												<a href="#!" id="{{ $seat->BusSeat_Id }}">
-													<img src="/images/selected_seat.png" alt="available_seat_icon" height="{{ $height }}px" width="{{ $width }}px" title="Seat is on process of reservation." title="Seat is already in other process of reservation" 
-													/>
-												</a>
-												<b>{{ $seat->BusSeat_Number }}</b>
-											</td>
-											@if (($ctrRow % $seating->rowPerColumn) == 0)
-												</tr>
-											@endif
+									
 
 									@elseif ($seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
 											<td>
@@ -158,17 +148,7 @@
 												</tr>
 											@endif
 
-									@elseif ($seat->BusSeatStatus_Name == 'Tentative' || $seat->BusSeatStatus_Name == 'tentative')
-											<td>
-												<a href="#!" id="{{ $seat->BusSeat_Id }}">
-													<img src="/images/selected_seat.png" alt="available_seat_icon" height="{{ $height }}px" width="{{ $width }}px" title="Seat is on process of reservation." title="Seat is already in other process of reservation" 
-													/>
-												</a>
-												<b>{{ $seat->BusSeat_Number }}</b>
-											</td>
-											@if (($ctrRow % $seating->rowPerColumn) == 0)
-												</tr>
-											@endif
+									
 
 									@elseif ($seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
 											<td>
@@ -227,17 +207,7 @@
 												</tr>
 											@endif
 											
-									@elseif ($seat->BusSeatStatus_Name == 'Tentative' || $seat->BusSeatStatus_Name == 'tentative')
-											<td>
-												<a href="#!" id="{{ $seat->BusSeat_Id }}">
-													<img src="/images/selected_seat.png" alt="available_seat_icon" height="{{ $height }}px" width="{{ $width }}px" title="Seat is on process of reservation." title="Seat is already in other process of reservation" 
-													/>
-												</a>
-												<b>{{ $seat->BusSeat_Number }}</b>
-											</td>
-											@if (($ctrRow % $seating->rowPerColumn) == 0)
-												</tr>
-											@endif
+									
 
 									@elseif ( $seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
 										<td>
@@ -293,11 +263,11 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td><img src = '/images/available_seat.png' alt = 'Available' class="seat-legends"><br>Available</td>
-								<td><img src = '/images/taken_seat.png' alt = 'Taken' class="seat-legends"><br>Taken</td>
-								<td><img src = '/images/reserved_seat.png' alt = 'Reserved' class="seat-legends"><br>Reserved</td>
-								<td><img src = '/images/selected_seat.png' alt = 'Selected' class="seat-legends"><br>On Queue</td>
-								<td><img src= '/images/tentative_seat.png' alt= 'Tentative' class="seat-legends"><br>Your Selected Seat</td>
+								<td><img src = '/images/available_seat.png' alt = 'Available' class="seat-legends"><br><b>Available</b></td>
+								<td><img src = '/images/taken_seat.png' alt = 'Taken' class="seat-legends"><br><b>Taken</b></td>
+								<td><img src = '/images/reserved_seat.png' alt = 'Reserved' class="seat-legends"><br><b>Reserved</b></td>
+								<td><img src = '/images/selected_seat.png' alt = 'Selected' class="seat-legends"><br><b>On Queue</b></td>
+								<td><img src = '/images/tentative_seat.png' alt= 'Tentative' class="seat-legends"><br><b>Seat You Selected</b></td>
 							</tr>
 						</tbody>
 					</table>
