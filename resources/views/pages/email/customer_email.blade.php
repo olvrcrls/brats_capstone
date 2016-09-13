@@ -22,7 +22,7 @@ Do make a down payment or installment via Payment to our bank account or directl
 <br>
 <br>
 This e-mail has an attachment of back-up e-payment voucher for your transaction. <br>
-E-Voucher is only valid until a day before your dispatch schedule. For more information & inquiries, please send an e-mail to support@brats.com <br> <br>
+E-Voucher is only valid for a number of days to transact (please check the Instructions). For more information & inquiries, please send an e-mail to support@brats.com <br> <br>
 <br>
 <br>
 - Bus Reservation And Ticketing System (BRATS) Support.

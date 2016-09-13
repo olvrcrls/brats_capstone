@@ -158,7 +158,7 @@
 					</span>
 					<hr><br>
 					<span class="flow-text">
-						<b>Total Transaction Fee : <i class="fa fa-rub"></i> {{ $totalFarePrice + $onlineFee }}</b>
+						<b>Total Transaction Fee : <i class="fa fa-rub"></i> {{ number_format($totalFarePrice + $onlineFee, 2) }}</b>
 						<input type="hidden" name="Purchase_Date" value="{{ date('Y-m-d') }}">
 					</span>
 					<br>&nbsp;

@@ -11,6 +11,7 @@ use App\purchase as Purchase;
 use App\travel_dispatch as Dispatch;
 use App\passenger_ticket as Ticket;
 use App\online_reservation_fee as OnlineFee;
+use App\reserve_cancellation_percentage as Percentage;
 
 class EmailController extends Controller
 {
@@ -33,7 +34,8 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
+        $numberOfDays = Percentage::count();
+    	$valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */
@@ -403,14 +405,23 @@ class EmailController extends Controller
     	/*
     	 * SENDING PDF FILE
     	 */
-    	Mail::send('pages.email.customer_email', ['customer_name' => $customer_name, 'transaction_number' => $purchase->Purchase_Id], 
-    		function ($message) use ($customer, $purchase, $customer_name, $pdf) {
-			$message->to($customer->OnlineCustomer_Email, $customer_name)
-					->subject('Printable E-Voucher - Bus Reservation And Ticketing System')
-					->attachData($pdf->output(), "$purchase->Purchase_Id - E-Voucher BRATS.pdf");
-		});
+        try
+        {
+        	Mail::send('pages.email.customer_email', ['customer_name' => $customer_name, 'transaction_number' => $purchase->Purchase_Id], 
+        		function ($message) use ($customer, $purchase, $customer_name, $pdf) {
+    			$message->to($customer->OnlineCustomer_Email, $customer_name)
+    					->subject('Printable E-Voucher - Bus Reservation And Ticketing System')
+    					->attachData($pdf->output(), "$purchase->Purchase_Id - E-Voucher BRATS.pdf");
+    		});
 
-		return view('pages.purchase.pdf', compact('customer', 'purchase', 'tickets', 'dispatch', 'title', 'onlineFee'));
+            return view('pages.purchase.pdf', compact('customer', 'purchase', 'tickets', 'dispatch', 'title', 'onlineFee', 'numberOfDays'));
+        }
+        catch (\Swift_TransportException $e)
+        {
+            return "Something went wrong. Please check your internet connection and then refresh this page.";
+        }
+
+		
     }
 
     public function save(Purchase $purchase, Customer $customer)
@@ -432,7 +443,8 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
+    	$numberOfDays = Percentage::count();
+        $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF OUTPUT
     	 */
@@ -819,7 +831,8 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$valid = date('m/d/Y', time() + 259200); // voucher will expire 3 days from the (reservation) date today.
+    	$numberOfDays = Percentage::count();
+        $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */

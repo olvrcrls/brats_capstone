@@ -118,7 +118,7 @@
 									<b><i>Instructions </i>:</b>
 									<br><br>
 									<i>
-										This is your copy. Keep this in a safe place. This document valid until <b>{{ date('m/d/Y', time() + 259200) }}</b>
+										This is your copy. Keep this in a safe place. This document valid until <b>{{ date('m/d/Y', strtotime("+$numberOfDays days")) }}</b>
 										<br><br>
 
 										If you are half-paid the teller will indicate to your copy of your installment in the remarks field.
