@@ -43,7 +43,7 @@ class ScheduleController extends Controller
    							  ->orderBy('TravelDispatch_Date', 'asc')
    							  ->get();
 
-		if( ! $dispatches->count())
+		if(!$dispatches->count())
     	{
     			return redirect()->action('HomeController@fail');
     	} //if there is no route   							  

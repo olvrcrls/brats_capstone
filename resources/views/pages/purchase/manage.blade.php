@@ -34,14 +34,14 @@
 					{{ method_field('POST') }}
 					<div class="row">
 						<div class="input-field col s11 col m11">
-							<input required type="text" name="purchaseReference" id="purchaseReference" title="Enter your transaction/purchase number"
+							<input required type="number" name="purchaseReference" id="purchaseReference" title="Enter your transaction/purchase number" 
 							class="validate">
 							<label for="purchaseReference">Transaction Number Reference* :</label>
 						</div>
 					</div>
 					<div class="row">
 						<div class="input-field col s11 col m11">
-							<input required type="text" name="purchaseLastName" id="purchaseLastName" title="Enter online customer's last name" class="validate" pattern="[A-Za-z ,.'-]{2,150}">
+							<input required type="text" name="purchaseLastName" id="purchaseLastName" title="Enter online customer's last name" class="validate" pattern="[A-Za-z][A-Za-z ,.'-]{2,150}">
 							<label for="purchaseLastName">Online Customer's Surname* :</label>
 						</div>
 					</div>

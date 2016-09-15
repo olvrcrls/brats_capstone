@@ -408,19 +408,19 @@
 									<div class="row col s12 col m12">
 										<div class="input-field white-text col s4 col m4">
 											<input type="text" name="OnlineCustomer_FirstName" required="true" id="payorFirstName" 
-													v-model="Payor.payorFirstName" pattern="[A-Za-z ,.'-]{2,150}" class="validate" 
+													v-model="Payor.payorFirstName" pattern="[A-Za-z][A-Za-z ,.'-]{2,150}" class="validate" 
 											/>
 											<label class="white-text" for="payorFirstName">First Name*</label>
 										</div>
 										<div class="input-field white-text col s4 col m4">
 											<input type="text" name="OnlineCustomer_MiddleName" id="payorMiddleName" 
-													v-model="Payor.payorMiddleName" pattern="[A-Za-z ,.'-]{2,150}" class="validate" 
+													v-model="Payor.payorMiddleName" pattern="[A-Za-z][A-Za-z ,.'-]{2,150}" class="validate" 
 											/>
 											<label class="white-text" for="payorMiddleName">Middle Name</label>
 										</div>
 										<div class="input-field white-text col s4 col m4">
 											<input type="text" name="OnlineCustomer_LastName" id="payorLastName" required 
-													v-model="Payor.payorLastName" pattern="[A-Za-z ,.'-]{2,150}" class="validate" 
+													v-model="Payor.payorLastName" pattern="[A-Za-z][A-Za-z ,.'-]{2,150}" class="validate" 
 											/>
 											<label class="white-text" for="payorLastName">Last Name*</label>
 										</div>
@@ -474,20 +474,20 @@
 											<h4 class="flow-text"><b><i class="fa fa-user"></i> Passenger #{{ $i+1 }}</b></h4>
 											<div class="row col s12 col m12">
 												<div class="input-field col s4 col m4">
-													<input class="white-text validate" type="text" id="passengerFirstName" name="passengerFirstName[]" required pattern="[A-Za-z ,.'-]{2,150}"/>
+													<input class="white-text validate" type="text" id="passengerFirstName" name="passengerFirstName[]" required pattern="[A-Za-z][A-Za-z ,.'-]{2,150}"/>
 													<label class="white-text" for="passengerFirstName">
 														First Name*
 													</label>
 												</div>
 												<div class="input-field col s4 col m4">
 													<input class="white-text validate" type="text" id="passengerMiddleName" name="passengerMiddleName[]"
-													pattern="[A-Za-z ,.'-]{2,150}"/>
+													pattern="[A-Za-z][A-Za-z ,.'-]{2,150}"/>
 													<label class="white-text" for="passengerMiddleName">
 														Middle Name
 													</label>
 												</div>
 												<div class="input-field col s4 col m4">
-													<input class="white-text validate" type="text" id="passengerLastName" name="passengerLastName[]" required pattern="[A-Za-z ,.'-]{2,150}"/>
+													<input class="white-text validate" type="text" id="passengerLastName" name="passengerLastName[]" required pattern="[A-Za-z][A-Za-z ,.'-]{2,150}"/>
 													<label class="white-text" for="passengerLastName">
 														Last Name*
 													</label>

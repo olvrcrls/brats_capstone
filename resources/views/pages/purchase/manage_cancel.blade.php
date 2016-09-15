@@ -140,10 +140,26 @@
 							</tr>
 							<tr>
 								<td>
-									<b>Total Cost:</b>
+									<b>Total Transaction Price:</b>
 								</td>
 								<td>
-									<span class="red-text">Php {{ $purchase[0]->Purchase_TotalPrice }}</span>
+									<span class="green-text">Php {{ $purchase[0]->Purchase_TotalPrice }}</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>Payment Status:</b>
+								</td>
+								<td>
+									<span class="grey-text">{{ $purchase[0]->PaymentStatus_Name }}</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>Total Balance:</b>
+								</td>
+								<td>
+									<span class="red-text">Php {{ $costLeft }}</span>
 								</td>
 							</tr>
 						</tbody>

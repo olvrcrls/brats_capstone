@@ -62,7 +62,7 @@
                     <div class="col l4 offset-l2 s12">
                         <h5 class="black-text text-darken-1"><i class="fa fa-tag"></i> Links</h5>
                         <ul class="white-text">
-                            <li><a class="white-text" href="#!">Route & Schedule Details</a></li>
+                            <li><a class="white-text" href="{{ url('/routes') }}">Route & Schedule Details</a></li>
                             <li><a class="white-text" href="{{ url('/') }}">Schedule A Trip</a></li>
                             <li><a class="white-text" href="{{ url('/manage/trip') }}">Manage Booked Trip</a></li>
                             <!-- <li><a class="white-text" href="{{ url('/contact') }}">Contact Us</a></li> -->
@@ -74,7 +74,7 @@
           
             <div class="footer-copyright">
                 <div class="container brown-text text-accent-3">
-                    BSIT 4-1D JJJLOR &copy; {{ date('Y') }} Copyright
+                    &copy; BSIT 4-1D JJJLOR {{ date('Y') }} Copyright
                    <!--  <a class="blue-text right" href="#!">More Links</a> -->
                 </div>
             </div>

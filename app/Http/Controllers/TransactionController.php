@@ -351,11 +351,23 @@ class TransactionController extends Controller
                             return view('pages.purchase.manage', compact('title', 'status'));
                         }
                         else
-                            return view('pages.purchase.manage_cancel', compact('title', 'purchase'));
+                        {
+                            // gets the remaining balance
+                            if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid')
+                                $costLeft = 0.00;
+                            else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
+                                    $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
+                                $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
+                            else 
+                                $costLeft = $purchase[0]->Purchase_TotalPrice;
+
+                            return view('pages.purchase.manage_cancel', compact('title', 'purchase', 'costLeft'));
+                        }
                     } // if unpaid
 
                     else if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid' ||
-                             $purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid')
+                             $purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
+                             $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
                     {
                         $parsePaymentDate = date_format(date_create($purchase[0]->PaymentHistory_Date), 'Y-m-d');
                         $parsePaymentDate = new\DateTime($parsePaymentDate);
@@ -366,7 +378,18 @@ class TransactionController extends Controller
                             return view('pages.purchase.manage', compact('title', 'status'));
                         }
                         else
-                            return view('pages.purchase.manage_cancel', compact('title', 'purchase'));
+                        {
+                            // gets the remaining balance
+                            if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid')
+                                $costLeft = 0.00;
+                            else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
+                                    $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
+                                $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
+                            else 
+                                $costLeft = $purchase[0]->Purchase_TotalPrice;
+                           
+                            return view('pages.purchase.manage_cancel', compact('title', 'purchase', 'costLeft'));
+                        }
                     } // if fully paid or partially paid
                     
                 }
@@ -411,10 +434,20 @@ class TransactionController extends Controller
             $rate = Percentage::select('ReserveCancellationPercentage_Id','ReserveCancellationPercentage_PercentageReturn')
                                 ->where('ReserveCancellationPercentage_NumberOfDays', '=', $elapseDays)
                                 ->get();
-            $purchasePrice = Purchase::select('Purchase_TotalPrice')
-                                        ->where('Purchase_Id', '=', $request->purchaseId)
+            $purchasePrice = Purchase::select('Purchase_TotalPrice', 'PaymentStatus_Name', 'PaymentHistory_Amount')
+                                        ->join('payment', 'payment.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                        ->join('paymentstatus', 'paymentstatus.PaymentStatus_Id', '=', 'payment.PaymentStatus_Id')
+                                        ->join('paymenthistory', 'paymenthistory.Payment_Id', '=', 'payment.Payment_Id')
+                                        ->where('purchase.Purchase_Id', '=', $request->purchaseId)
                                         ->get();
-            $price = $purchasePrice[0]->Purchase_TotalPrice;
+            if ($purchasePrice[0]->PaymentStatus_Name == 'Unpaid' || $purchasePrice[0]->PaymentStatus_Name == 'unpaid')
+                $price = 0.00;
+            else if ($purchasePrice[0]->PaymentStatus == 'Partially Paid' || $purchasePrice[0]->PaymentStatus == 'partially paid' ||
+                     $purchasePrice[0]->PaymentStatus_Name == 'Half Paid' || $purchasePrice[0]->PaymentStatus == 'half paid')
+                $price = $purchasePrice[0]->Purchase_TotalPrice / 2;
+            else
+                $price = $purchasePrice[0]->Purchase_TotalPrice;
+
             $rate_id = $rate[0]->ReserveCancellationPercentage_Id;
             $rate = $rate[0]->ReserveCancellationPercentage_PercentageReturn / 100;
             $totalRefundMoney = ($price * $rate);
