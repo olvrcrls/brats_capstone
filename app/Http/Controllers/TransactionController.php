@@ -162,7 +162,6 @@ class TransactionController extends Controller
             ]);
 
         $Purchase_Id = $purchaseTransaction->Purchase_Id;
-        $PaymentHistory_Amount = $purchaseTransaction->Purchase_TotalPrice;
 
         // inserting Payment data
         $createPayment = Payment::create([
@@ -173,15 +172,15 @@ class TransactionController extends Controller
 
         $Payment_Id = $createPayment->Payment_Id;
 
-        // inserting of PaymentHistory data
+        //inserting of PaymentHistory data
         $createPaymentHistory = PaymentHistory::create([
 
              'Payment_Id' => $Payment_Id,
-             'PaymentHistory_Amount' => $PaymentHistory_Amount,
+             'PaymentHistory_Amount' => 0.00,
              'PaymentHistory_Date' => date('Y-m-d h:i:s'),
              'Terminal_Id' => $terminal
          ]);
-        // inserting of OnlineCustomer data
+        //inserting of OnlineCustomer data
         $onlineCustomer = OnlineCustomer::create([
                 'OnlineCustomer_FirstName' => $request->OnlineCustomer_FirstName,
                 'OnlineCustomer_LastName' => $request->OnlineCustomer_LastName,
@@ -251,7 +250,7 @@ class TransactionController extends Controller
                     $status = "There is no such booked transaction found.";
                     return view('pages.purchase.manage', compact('title', 'status'));
                 } // checks if there is such transaction is found.
-
+                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $customerInformation[0]->Purchase_Id);
                 $today = date('m/d/Y');
                 $purchaseDate = date_format(date_create($customerInformation[0]->Purchase_Date), 'm/d/Y'); // converts into Month/Day/Year of the purchaseDate
                 $expireDate = date('m/d/Y', strtotime($purchaseDate. '+ 3 days')); // computes the expiration date
@@ -264,6 +263,10 @@ class TransactionController extends Controller
                 {
                     $customer->expired = true;
                 } // checks if the voucher is already expired.
+                if ($isCancelled->count())
+                {
+                    $customer->cancelled = true;
+                }
                 return view('pages.purchase.manage_retrieve', compact('title', 'customer'));
             }
 
@@ -298,12 +301,19 @@ class TransactionController extends Controller
                     $status = "There is no such booked transaction found.";
                     return view('pages.purchase.manage', compact('title', 'status'));
                 }// checks if there is such transaction is found.
+                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $infos[0]->Purchase_Id);
+                
+                if ($isCancelled->count())
+                {
+                    $status = "This reservation cannot be checked because it has already requested a cancellation or refund which is subject to forfeit reservation.";
+                    return view('pages.purchase.manage', compact('title', 'status'));   
+                }
                 else
                     return view('pages.purchase.manage_check', compact('title', 'infos'));
             }
             else if ($request->purchaseRequest == 'cancel')
             { 
-                 $purchase = OnlineCustomer::select('OnlineCustomer_Id', 'onlinecustomer.Purchase_Id', 'purchase.Purchase_Date', 'PaymentStatus_Name', 'paymenthistory.PaymentHistory_Date', 'route.Route_Name', 'bus.Bus_Id', 'bus.Bus_PlateNumber', 'busstatus.BusStatus_Name', 'bustype.BusType_Name', 'purchase.Purchase_TotalPrice', 'onlinecustomer.Purchase_Id')
+                 $purchase = OnlineCustomer::select('OnlineCustomer_Id', 'onlinecustomer.Purchase_Id', 'purchase.Purchase_Date', 'PaymentStatus_Name', 'paymenthistory.PaymentHistory_Date', 'route.Route_Name', 'bus.Bus_Id', 'bus.Bus_PlateNumber', 'busstatus.BusStatus_Name', 'bustype.BusType_Name', 'purchase.Purchase_TotalPrice', 'onlinecustomer.Purchase_Id', 'traveldispatch.TravelDispatch_Date')
                                             ->join('purchase', 'onlinecustomer.Purchase_Id', '=', 'purchase.Purchase_Id')
                                             ->join('payment', 'payment.Purchase_Id', '=', 'purchase.Purchase_Id')
                                             ->join('paymentstatus', 'payment.PaymentStatus_Id', '=', 'paymentstatus.PaymentStatus_Id')
@@ -338,6 +348,14 @@ class TransactionController extends Controller
                 {
                     $today = date('Y-m-d');
                     $today = new\DateTime($today); //parsing to Date Time
+                    $tripDate = new\DateTime($purchase[0]->TravelDispatch_Date);
+                    $tripDifference = $tripDate->diff($today);
+                    if ($tripDifference->days <= 1)
+                    {
+                        $status = "Sorry, but your transaction cannot be cancelled anymore.";
+                        return view('pages.purchase.manage', compact('title', 'status'));
+                    }
+
                     $total_num_of_days = Percentage::count(); // total number of days before the transaction is forfeited
 
                     if ($purchase[0]->PaymentStatus_Name == 'Unpaid' || $purchase[0]->PaymentStatus_Name == 'unpaid')
@@ -353,13 +371,13 @@ class TransactionController extends Controller
                         else
                         {
                             // gets the remaining balance
-                            if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid')
-                                $costLeft = 0.00;
-                            else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
-                                    $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
-                                $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
-                            else 
-                                $costLeft = $purchase[0]->Purchase_TotalPrice;
+                            // if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid')
+                            //     $costLeft = 0.00;
+                            // else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
+                            //         $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
+                            //     $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
+                            // else 
+                            $costLeft = $purchase[0]->Purchase_TotalPrice;
 
                             return view('pages.purchase.manage_cancel', compact('title', 'purchase', 'costLeft'));
                         }
@@ -374,7 +392,7 @@ class TransactionController extends Controller
                         $difference = $parsePaymentDate->diff($today);
                         if ($difference->days > $total_num_of_days)
                         {
-                            $status = "Sorry but your transaction cannot be cancelled anymore.";
+                            $status = "Sorry, but your transaction cannot be cancelled anymore.";
                             return view('pages.purchase.manage', compact('title', 'status'));
                         }
                         else

@@ -12,7 +12,7 @@
 */
 
 use App\reserve_cancellation_percentage as Percentage;
-
+use App\days_span_to_reserve as ReservationDay;
 Route::get('/', 'HomeController@index');
 Route::get('/about', function () {
 		return view('about');
@@ -25,8 +25,15 @@ Route::get('/bus/passengers/terms_and_agreement', function () {
 	$percentages = Percentage::select('ReserveCancellationPercentage_NumberOfDays', 'ReserveCancellationPercentage_PercentageReturn')
 							  ->get();
 	$totalDays = Percentage::count();
+	$days = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get();
+	if (!$days->count())
+	{
+		$days = 0;
+		return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System', 'percentages' => $percentages,
+									  'totalDays' => $totalDays, 'days' => $days]);
+	}
 	return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System', 'percentages' => $percentages,
-									  'totalDays' => $totalDays ]);
+									  'totalDays' => $totalDays, 'days' => $days[0]->DaysSpanToReserve_Days ]);
 });
 Route::post('/book_seats', 'TransactionController@input');
 Route::post('/book_seats/iterate', 'TransactionController@view');
@@ -48,7 +55,8 @@ Route::put('/api/seats/update/queue', 'SeatController@ajaxUpdate_queue');
 Route::put('/api/seats/update/unqueue', 'SeatController@ajaxUpdate_unqueue');
 Route::put('/api/seats/update/all/unqueue', 'SeatController@ajaxUpdate_unqueue_all');
 Route::put('/api/seats/update/all/available', 'SeatController@ajaxUpdate_setAvailable_all');
-
+Route::get('/api/routes/fetch', 'RouteController@fetch');
+Route::get('/api/schedule/days/fetch', 'ScheduleController@fetchDays');
 /* TEST */
 Route::get('/test/email', 'TestController@email');
 Route::get('/test/pdf', 'TestController@pdf');

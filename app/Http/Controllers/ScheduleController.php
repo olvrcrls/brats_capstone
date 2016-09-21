@@ -10,6 +10,7 @@ use App\travel_schedule as Schedule;
 use App\route as Path;
 use App\trip_type as TripType;
 use App\bus_seat as Seat;
+use App\days_span_to_reserve as ReservationDay;
 
 class ScheduleController extends Controller
 {
@@ -130,5 +131,14 @@ class ScheduleController extends Controller
        }//for
        $title = 'Available Bus Schedules - Bus Reservation And Ticketing System';
        return view('pages.schedules.schedules', compact('dispatch_schedules','title'));
+    }
+
+    public function fetchDays()
+    {
+        try {
+         return $days = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get(); 
+        } catch (Exception $e) {
+          return 3;
+        }
     }
 }

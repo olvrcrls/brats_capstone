@@ -1,1 +1,18 @@
-!function r(e,n,t){function o(i,c){if(!n[i]){if(!e[i]){var f="function"==typeof require&&require;if(!c&&f)return f(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var m=n[i]={exports:{}};e[i][0].call(m.exports,function(r){var n=e[i][1][r];return o(n?n:r)},m,m.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}({1:[function(r,e,n){"use strict";jQuery(document).ready(function(r){r("#btnSubmit").on("click",function(){var r=confirm("Please make sure of everything. \nProceed to printing your Transaction Voucher (E-Receipt)?");1==r?document.finalCheckoutForm.submit():document.finalCheckoutForm.preventDefault()})})},{}]},{},[1]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+jQuery(document).ready(function ($) {
+	$('#btnSubmit').on('click', function () {
+		var confirmBox = confirm("Please make sure of everything. \nProceed to printing your Transaction Voucher (E-Receipt)?");
+		// alert(confirmBox);
+		if (confirmBox == true) {
+			document.finalCheckoutForm.submit();
+		} else {
+			document.finalCheckoutForm.preventDefault();
+		}
+	});
+});
+
+},{}]},{},[1]);
+
+//# sourceMappingURL=checkout_es6.js.map

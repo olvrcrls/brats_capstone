@@ -243,12 +243,6 @@
 							</tr>
 						</tbody>
 					</table><br>
-					<a href="#!">
-						<button class="btn waves-effect waves-light btn-primary green right" type="button" @click="submit()">
-							<b>PROCEED <i class="fa fa-btn fa-check"></i></b>
-						</button>
-					</a>
-				
 			</div>
 		</div>
 		<div class="row col s12 col m12">
@@ -272,6 +266,11 @@
 						</tbody>
 					</table>
 				</div> <br>
+				<a href="#!">
+					<button class="btn waves-effect waves-light btn-primary green right" type="button" @click="submit()">
+						<b>PROCEED <i class="fa fa-btn fa-check"></i></b>
+					</button>
+				</a>
 			</div>
 		</div>
 			<!-- PAYOR's FORM -->

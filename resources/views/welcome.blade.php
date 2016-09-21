@@ -87,5 +87,5 @@
     </div> -->
 @endsection
 @section('footer')
-    <script type='text/javascript' src='/js/site.js'></script>
+    <script type='text/javascript' src='/js/site_es6.js'></script>
 @endsection

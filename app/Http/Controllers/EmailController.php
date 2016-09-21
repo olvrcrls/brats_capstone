@@ -418,7 +418,12 @@ class EmailController extends Controller
         }
         catch (\Swift_TransportException $e)
         {
-            return "Something went wrong. Please check your internet connection and then refresh this page.";
+            // return "Something went wrong. Please check your internet connection and then refresh this page.";
+            return view('errors.mail_error', ['title' => 'Connection Problem - Bus Reservation And Ticketing System', 'transactionNumber' => $purchase->Purchase_Id]);
+        }
+        catch (Exception $e)
+        {
+            return view('errors.mail_error', ['title' => 'Connection Problem - Bus Reservation And Ticketing System', 'transactionNumber' => $purchase->Purchase_Id]);   
         }
 
 		

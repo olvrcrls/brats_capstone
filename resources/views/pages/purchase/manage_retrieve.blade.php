@@ -8,6 +8,18 @@
 		<span class="flow-text">
 			<b>Retrieval copy of E-Voucher</b>
 		</span><br><br>
+		@if (isset($customer->cancelled))
+		<div class="row">
+			<div class="card red darken-1 white-text z-depth-2 col s8 col m8">
+				<span class="flow-text">
+				  	<b>
+				  		<u>This transaction has already requested a cancellation/refund request.</u> <br><br>
+				  		Please contact the customer service at bratscapstone@gmail.com, for more information.
+				  	</b>
+				 </span>
+			</div>
+		</div>
+		@endif
 		@if (isset($customer->expired))
 		<!-- Displays if the voucher is already expired -->
 		<div class="row">

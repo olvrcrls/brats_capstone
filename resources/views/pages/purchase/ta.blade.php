@@ -26,7 +26,7 @@
 				<li>
 					<h4 class="center">Ticket Reservations <i class="fa fa-tag"></i></h4>
 					<p class="flow-text">
-							- Reservations are made for <b>3 days in advance</b>. In order for the company to have sufficient time and working days to accomodate those who are
+							- Reservations are made for <b>{{ $days }} days in advance</b>. In order for the company to have sufficient time and working days to accomodate those who are
 							using the online  services for reserving their tickets.
 					</p>	
 				</li>

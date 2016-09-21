@@ -91,7 +91,7 @@
 							</td>
 							<td>
 								@if ((strtolower($schedule->status) == 'on queue' || strtolower($schedule->status) == 'queue' ||
-										strtolower($schedule->status) == 'available' || strtolower($schedule->status) == 'available') &&
+										strtolower($schedule->status) == 'available') &&
 										!($schedule->seats <= 0))
 										<button type="submit" class="btn btn-primary green">
 											BOOK SEATS <i class="fa fa-btn fa-location-arrow"></i>

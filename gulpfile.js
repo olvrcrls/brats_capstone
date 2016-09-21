@@ -13,7 +13,9 @@ require('gulp');
  */
 
 elixir(function(mix) {
+	mix.browserify('site.js', 'public/js/site_es6.js');
 	mix.browserify('seats.js', 'public/js/compiled/seats_es6.js');
 	mix.browserify('checkout.js', 'public/js/compiled/checkout_es6.js');
 	mix.browserify('cancellation.js', 'public/js/compiled/cancellation_es6.js');
+	mix.browserify('routes.js', 'public/js/compiled/routes_es6.js');
 });
