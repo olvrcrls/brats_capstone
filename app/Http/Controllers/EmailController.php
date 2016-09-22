@@ -12,18 +12,33 @@ use App\travel_dispatch as Dispatch;
 use App\passenger_ticket as Ticket;
 use App\online_reservation_fee as OnlineFee;
 use App\reserve_cancellation_percentage as Percentage;
+use App\utilities_company as Utilities;
+use App\reservation_days_to_void as Void;
 
 class EmailController extends Controller
 {
     public function index(Request $request, Purchase $purchase, Customer $customer)
     {
+        $info = new\stdClass;
+        try
+        {
+            $result = Utilities::select('UtilitiesCompanyInfo_CompanyName')
+                                ->orderBy('UtilitiesCompanyInfo_Id', 'desc')
+                                ->take(1)
+                                ->get();
+
+            $info->companyName = $result[0]->UtilitiesCompanyInfo_CompanyName;
+        }
+        catch (Exception $e)
+        {
+            $info->companyName = 'Bus Reservation And Ticketing System';
+        }
     	$title = "View Print - Bus Reservation And Ticketing System";
     	$dispatch = Dispatch::select('Route_Name', 'TravelDispatch_Date', 'TravelSchedule_Time')
                               ->where('TravelDispatch_Id', '=', $purchase->TravelDispatch_Id)
                               ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
                               ->join('route', 'travelschedule.Route_Id', '=', 'route.Route_Id')
                               ->get();
-
         $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id')
                                    ->where('Purchase_Id', '=',$purchase->Purchase_Id)
                                    ->join('routepathways', 'routepathways.RoutePathWays_Id', '=', 'passengerticket.RoutePathWays_Id')
@@ -34,7 +49,15 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-        $numberOfDays = Percentage::count();
+        try
+        {
+            $voidDay = Void::select('ReservationDaysToVoid_Days')->orderBy('ReservationDaysToVoid_Id', 'desc')->take(1)->get();
+            $numberOfDays = $voidDay[0]->ReservationDaysToVoid_Days;
+        }
+        catch(Exception $e)
+        {
+            $numberOfDays = 3;
+        }
     	$valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
@@ -43,7 +66,7 @@ class EmailController extends Controller
                     <html>
                     <head>
                         <title>
-                            E-Voucher #$purchase->Purchase_Id Bus Reservation And Ticketing System Company
+                            E-Voucher #$purchase->Purchase_Id $info->companyName
                         </title>
                         <link rel='stylesheet' href='./css/app.css'/>
                     </head>
@@ -54,8 +77,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>
@@ -218,11 +241,11 @@ class EmailController extends Controller
                                         This is your copy. Keep this in a safe place. This document is valid until <b>$valid</b>
                                         <br><br>
 
-                                        If you are half-paid the teller will indicate to your copy of your installment in the remarks field.
+                                        If you are half-paid or fully paid, the teller will indicate to your copy of your installment in the remarks field.
                                         <br>
                                         Bring this voucher for refunds and cancellations of online reservations to the origin terminal.
                                         <br><br>
-                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the Bus Reservation And Ticketing System Company.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
+                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the $info->companyName.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
                                     </i> 
                                     <br>
                             <p>
@@ -235,8 +258,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>
@@ -407,18 +430,22 @@ class EmailController extends Controller
     	 */
         try
         {
-        	Mail::send('pages.email.customer_email', ['customer_name' => $customer_name, 'transaction_number' => $purchase->Purchase_Id], 
-        		function ($message) use ($customer, $purchase, $customer_name, $pdf) {
+        	Mail::send('pages.email.customer_email', ['customer_name' => $customer_name, 'transaction_number' => $purchase->Purchase_Id, 'companyName' => $info->companyName], 
+        		function ($message) use ($customer, $purchase, $customer_name, $pdf, $info) {
     			$message->to($customer->OnlineCustomer_Email, $customer_name)
-    					->subject('Printable E-Voucher - Bus Reservation And Ticketing System')
+    					->subject("Printable E-Voucher - $info->companyName")
     					->attachData($pdf->output(), "$purchase->Purchase_Id - E-Voucher BRATS.pdf");
     		});
 
-            return view('pages.purchase.pdf', compact('customer', 'purchase', 'tickets', 'dispatch', 'title', 'onlineFee', 'numberOfDays'));
+            return view('pages.purchase.pdf', compact('customer', 'purchase', 'tickets', 'dispatch', 'title', 'onlineFee', 'numberOfDays', 'info'));
         }
         catch (\Swift_TransportException $e)
         {
             // return "Something went wrong. Please check your internet connection and then refresh this page.";
+            return view('errors.mail_error', ['title' => 'Connection Problem - Bus Reservation And Ticketing System', 'transactionNumber' => $purchase->Purchase_Id]);
+        }
+        catch(FatalErrorException $e)
+        {
             return view('errors.mail_error', ['title' => 'Connection Problem - Bus Reservation And Ticketing System', 'transactionNumber' => $purchase->Purchase_Id]);
         }
         catch (Exception $e)
@@ -431,7 +458,21 @@ class EmailController extends Controller
 
     public function save(Purchase $purchase, Customer $customer)
     {
-    	# code...
+    	$info = new\stdClass;
+        try
+        {
+            $result = Utilities::select('UtilitiesCompanyInfo_CompanyName')
+                                ->orderBy('UtilitiesCompanyInfo_Id', 'desc')
+                                ->take(1)
+                                ->get();
+
+            $info->companyName = $result[0]->UtilitiesCompanyInfo_CompanyName;
+        }
+        catch (Exception $e)
+        {
+            $info->companyName = 'Bus Reservation And Ticketing System';
+        }
+
     	$dispatch = Dispatch::select('Route_Name', 'TravelDispatch_Date', 'TravelSchedule_Time')
                               ->where('TravelDispatch_Id', '=', $purchase->TravelDispatch_Id)
                               ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
@@ -448,7 +489,15 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$numberOfDays = Percentage::count();
+    	try
+        {
+            $voidDay = Void::select('ReservationDaysToVoid_Days')->orderBy('ReservationDaysToVoid_Id', 'desc')->take(1)->get();
+            $numberOfDays = $voidDay[0]->ReservationDaysToVoid_Days;
+        }
+        catch(Exception $e)
+        {
+            $numberOfDays = 3;
+        }
         $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF OUTPUT
@@ -457,7 +506,7 @@ class EmailController extends Controller
                     <html>
                     <head>
                         <title>
-                            E-Voucher #$purchase->Purchase_Id Bus Reservation And Ticketing System Company
+                            E-Voucher #$purchase->Purchase_Id $info->companyName
                         </title>
                         <link rel='stylesheet' href='./css/app.css'/>
                     </head>
@@ -468,8 +517,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>
@@ -632,11 +681,11 @@ class EmailController extends Controller
                                         This is your copy. Keep this in a safe place. This document is valid until <b>$valid</b>
                                         <br><br>
 
-                                        If you are half-paid the teller will indicate to your copy of your installment in the remarks field.
+                                        If you are half-paid or fully paid, the teller will indicate to your copy of your installment in the remarks field.
                                         <br>
                                         Bring this voucher for refunds and cancellations of online reservations to the origin terminal.
                                         <br><br>
-                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the Bus Reservation And Ticketing System Company.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
+                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the $info->companyName.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
                                     </i> 
                                     <br>
                             <p>
@@ -649,8 +698,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>
@@ -821,6 +870,20 @@ class EmailController extends Controller
 
     public function printDocument(Purchase $purchase, Customer $customer)
     {
+        $info = new\stdClass;
+        try
+        {
+            $result = Utilities::select('UtilitiesCompanyInfo_CompanyName')
+                                ->orderBy('UtilitiesCompanyInfo_Id', 'desc')
+                                ->take(1)
+                                ->get();
+
+            $info->companyName = $result[0]->UtilitiesCompanyInfo_CompanyName;
+        }
+        catch (Exception $e)
+        {
+            $info->companyName = 'Bus Reservation And Ticketing System';
+        }
     	$dispatch = Dispatch::select('Route_Name', 'TravelDispatch_Date', 'TravelSchedule_Time')
                               ->where('TravelDispatch_Id', '=', $purchase->TravelDispatch_Id)
                               ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
@@ -836,7 +899,15 @@ class EmailController extends Controller
     	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
-    	$numberOfDays = Percentage::count();
+    	try
+        {
+            $voidDay = Void::select('ReservationDaysToVoid_Days')->orderBy('ReservationDaysToVoid_Id', 'desc')->take(1)->get();
+            $numberOfDays = $voidDay[0]->ReservationDaysToVoid_Days;
+        }
+        catch(Exception $e)
+        {
+            $numberOfDays = 3;
+        }
         $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
@@ -845,7 +916,7 @@ class EmailController extends Controller
                     <html>
                     <head>
                         <title>
-                            E-Voucher #$purchase->Purchase_Id Bus Reservation And Ticketing System Company
+                            E-Voucher #$purchase->Purchase_Id $info->companyName
                         </title>
                         <link rel='stylesheet' href='./css/app.css'/>
                     </head>
@@ -856,8 +927,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>
@@ -1020,11 +1091,11 @@ class EmailController extends Controller
                                         This is your copy. Keep this in a safe place. This document is valid until <b>$valid</b>
                                         <br><br>
 
-                                        If you are half-paid the teller will indicate to your copy of your installment in the remarks field.
+                                        If you are half-paid or fully paid, the teller will indicate to your copy of your installment in the remarks field.
                                         <br>
                                         Bring this voucher for refunds and cancellations of online reservations to the origin terminal.
                                         <br><br>
-                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the Bus Reservation And Ticketing System Company.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
+                                        I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the $info->companyName.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
                                     </i> 
                                     <br>
                             <p>
@@ -1037,8 +1108,8 @@ class EmailController extends Controller
                                      <td>
                                          <h2>
                                              <b>
-                                             <img src='./logo.png' width='100px' height='100px' align='center'>
-                                                 Bus Reservation And Ticketing System Company
+                                             <img src='./logo.png' width='130px' height='100px' align='center'>
+                                                 $info->companyName
                                              </b>
                                          </h2>
                                      </td>

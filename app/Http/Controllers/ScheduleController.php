@@ -138,7 +138,7 @@ class ScheduleController extends Controller
         try {
          return $days = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get(); 
         } catch (Exception $e) {
-          return 3;
+          return 1;
         }
     }
 }

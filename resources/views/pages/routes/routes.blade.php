@@ -1,6 +1,6 @@
 @extends('layout')
 @section('content')
-	<div class="container">
+	<div class="container" style="padding-bottom: 120px;">
 		<h2>List of Routes <i class="fa fa-btn fa-road"></i></h2>
 		<!-- <div class="row">
 			<div class="input-field col m6 col s6">

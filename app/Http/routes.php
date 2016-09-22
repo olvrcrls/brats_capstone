@@ -13,6 +13,7 @@
 
 use App\reserve_cancellation_percentage as Percentage;
 use App\days_span_to_reserve as ReservationDay;
+use App\reservation_days_to_void as Void;
 Route::get('/', 'HomeController@index');
 Route::get('/about', function () {
 		return view('about');
@@ -26,14 +27,17 @@ Route::get('/bus/passengers/terms_and_agreement', function () {
 							  ->get();
 	$totalDays = Percentage::count();
 	$days = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get();
-	if (!$days->count())
+	$voidDay = Void::select('ReservationDaysToVoid_Days')->orderBy('ReservationDaysToVoid_Id', 'desc')->take(1)->get();
+	if (!$days->count() || !$voidDay->count())
 	{
 		$days = 0;
+		$voidDay = 0;
 		return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System', 'percentages' => $percentages,
-									  'totalDays' => $totalDays, 'days' => $days]);
+									  'totalDays' => $totalDays, 'days' => $days, 'voidDay' => $voidDay]);
 	}
 	return view('pages.purchase.ta', ['title' => 'Terms And Agreement - Bus Reservation And Ticketing System', 'percentages' => $percentages,
-									  'totalDays' => $totalDays, 'days' => $days[0]->DaysSpanToReserve_Days ]);
+									  'totalDays' => $totalDays, 'days' => $days[0]->DaysSpanToReserve_Days , 
+									  'voidDays' => $voidDay[0]->ReservationDaysToVoid_Days]);
 });
 Route::post('/book_seats', 'TransactionController@input');
 Route::post('/book_seats/iterate', 'TransactionController@view');

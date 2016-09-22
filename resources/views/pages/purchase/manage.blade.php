@@ -5,6 +5,20 @@
 	<script type="text/javascript" src="/js/index/app.js"></script>
 @stop
 @section('content')
+<?php  
+use App\utilities_company as Utilities;
+        try
+        {
+            $info = Utilities::select('UtilitiesCompanyInfo_EmailAddress', 'UtilitiesCompanyInfo_CompanyName')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
+            $email = $info[0]->UtilitiesCompanyInfo_EmailAddress;
+            $name = $info[0]->UtilitiesCompanyInfo_CompanyName;
+        }
+        catch (Exception $e)
+        {
+            $email = 'bratscapstone@gmail.com';
+            $name = 'Bus Reservation And Ticketing System';
+        }
+?>
 	<div class="brats-border">
 		<div class="row col s12 col m12">
 			<h2><b>Manage Booked Trips <i class="fa fa-briefcase"></i></b></h2>
@@ -76,7 +90,7 @@
 						- Select your request of managing your booked trip(s).
 					</li><br>
 					<li>
-						- Applicable for the tickets that are purchased or reserved online thru the BRATS website (www.brats.com.ph) only.
+						- Applicable for the tickets that are purchased or reserved online thru the {{ $name }}'s website (www.brats.com.ph) only.
 					</li><br>
 					<li>
 						- No downgrading of fares is allowed. 	
@@ -88,8 +102,8 @@
 						- Cancellation can not be done, the day before the trip.
 					</li> <br>
 					<li>
-						- Any other concerns, please contact landline number: 123-45-67 or 0922-222-2222 <br>
-						  or e-mail to us at bratscapstone@gmail.com
+						- Any other concerns, please contact landline number: 123-45-67 or 0919-XXX-XXXX <br>
+						  or e-mail to us at {{ $email }}
 					</li>
 				</ul>
 			</div>

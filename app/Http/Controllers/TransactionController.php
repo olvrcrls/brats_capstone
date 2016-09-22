@@ -76,7 +76,9 @@ class TransactionController extends Controller
     	$seating->rowPerColumn = $seats[0]->BusType_RowsPerColumnCount;
     	$seating->leftColumn = $seats[0]->BusType_LowerBoxColumnCount; //lowerbox
     	$seating->rightColumn = $seats[0]->BusType_UpperBoxColumnCount; //upperbox
-
+        $seating->floors = $seats[0]->BusType_NumberOfFloors;
+        $seating->capacity = $seats[0]->BusType_Capacity;
+        
     	$width = floor(650/$seating->totalRows);//computed width for each seat.
         $height = floor((220 - ($seating->rightColumn + $seating->leftColumn)) / ($seating->rightColumn + $seating->leftColumn + 1)); 
         //computed height for each seat.
@@ -173,13 +175,13 @@ class TransactionController extends Controller
         $Payment_Id = $createPayment->Payment_Id;
 
         //inserting of PaymentHistory data
-        $createPaymentHistory = PaymentHistory::create([
+        // $createPaymentHistory = PaymentHistory::create([
 
-             'Payment_Id' => $Payment_Id,
-             'PaymentHistory_Amount' => 0.00,
-             'PaymentHistory_Date' => date('Y-m-d h:i:s'),
-             'Terminal_Id' => $terminal
-         ]);
+        //      'Payment_Id' => $Payment_Id,
+        //      'PaymentHistory_Amount' => 0.00,
+        //      'PaymentHistory_Date' => date('Y-m-d h:i:s'),
+        //      'Terminal_Id' => $terminal
+        //  ]);
         //inserting of OnlineCustomer data
         $onlineCustomer = OnlineCustomer::create([
                 'OnlineCustomer_FirstName' => $request->OnlineCustomer_FirstName,
@@ -238,8 +240,10 @@ class TransactionController extends Controller
             if ($request->purchaseRequest  == 'voucher') // checks if the request service is E-Voucher retrieval
             {
                 $customerInformation = OnlineCustomer::select('OnlineCustomer_Id', 'TravelDispatch_Id', 'onlinecustomer.Purchase_Id','Purchase_Date',
-                                                            'OnlineCustomer_FirstName', 'OnlineCustomer_LastName')
+                                                            'OnlineCustomer_FirstName', 'OnlineCustomer_LastName', 'PaymentStatus_Name')
                                         ->join('purchase', 'purchase.Purchase_Id', '=', 'onlinecustomer.Purchase_Id')
+                                        ->join('payment', 'payment.Purchase_Id', '=', 'purchase.Purchase_Id')
+                                        ->join('paymentstatus', 'paymentstatus.PaymentStatus_Id', '=', 'payment.PaymentStatus_Id')
                                         ->where('OnlineCustomer_LastName', '=', $request->purchaseLastName)
                                         ->where('onlinecustomer.Purchase_Id', '=', $request->purchaseReference)
                                         ->orderBy('OnlineCustomer_Id', 'desc')
@@ -250,6 +254,12 @@ class TransactionController extends Controller
                     $status = "There is no such booked transaction found.";
                     return view('pages.purchase.manage', compact('title', 'status'));
                 } // checks if there is such transaction is found.
+                else if (ucfirst($customerInformation[0]->PaymentStatus_Name) == 'Refunded')
+                {
+                    $status = "This transaction is already cancelled or refunded.";
+                    return view('pages.purchase.manage', compact('title', 'status'));
+                }
+
                 $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $customerInformation[0]->Purchase_Id);
                 $today = date('m/d/Y');
                 $purchaseDate = date_format(date_create($customerInformation[0]->Purchase_Date), 'm/d/Y'); // converts into Month/Day/Year of the purchaseDate
@@ -301,6 +311,11 @@ class TransactionController extends Controller
                     $status = "There is no such booked transaction found.";
                     return view('pages.purchase.manage', compact('title', 'status'));
                 }// checks if there is such transaction is found.
+                else if (ucfirst($infos[0]->PaymentStatus_Name) == 'Refunded')
+                {
+                    $status = "This transaction has been cancelled or refunded already.";
+                    return view('pages.purchase.manage', compact('title', 'status'));   
+                }
                 $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $infos[0]->Purchase_Id);
                 
                 if ($isCancelled->count())
@@ -309,7 +324,9 @@ class TransactionController extends Controller
                     return view('pages.purchase.manage', compact('title', 'status'));   
                 }
                 else
+                {
                     return view('pages.purchase.manage_check', compact('title', 'infos'));
+                }
             }
             else if ($request->purchaseRequest == 'cancel')
             { 
@@ -330,13 +347,14 @@ class TransactionController extends Controller
                                             ->orderBy('paymenthistory.Payment_Id', 'desc')
                                             ->take(1)
                                             ->get();
-                if (!$purchase->count())
+
+                if (!$purchase->count() || ucfirst($purchase[0]->PaymentStatus_Name) == 'Unpaid')
                 {
-                    $status = "There is no such booked transaction found.";
+                    $status = "There is no such paid or booked transaction found.";
                     return view('pages.purchase.manage', compact('title', 'status'));
                 }
                 // check first if cancellation can be done.
-                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $purchase[0]->Purchase_Id);
+                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $purchase[0]->Purchase_Id)->get();
 
                 if($isCancelled->count() > 0)
                 {
@@ -358,32 +376,7 @@ class TransactionController extends Controller
 
                     $total_num_of_days = Percentage::count(); // total number of days before the transaction is forfeited
 
-                    if ($purchase[0]->PaymentStatus_Name == 'Unpaid' || $purchase[0]->PaymentStatus_Name == 'unpaid')
-                    {
-                        $parsePurchaseDate = date_format(date_create($purchase[0]->Purchase_Date), 'Y-m-d');
-                        $parsePurchaseDate = new\DateTime($parsePurchaseDate);
-                        $difference = $parsePurchaseDate->diff($today); // finding the difference between the date today and the date reserved
-                        if ($difference->days > $total_num_of_days)
-                        {
-                            $status = "Sorry but your transaction cannot be cancelled anymore.";
-                            return view('pages.purchase.manage', compact('title', 'status'));
-                        }
-                        else
-                        {
-                            // gets the remaining balance
-                            // if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid')
-                            //     $costLeft = 0.00;
-                            // else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
-                            //         $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
-                            //     $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
-                            // else 
-                            $costLeft = $purchase[0]->Purchase_TotalPrice;
-
-                            return view('pages.purchase.manage_cancel', compact('title', 'purchase', 'costLeft'));
-                        }
-                    } // if unpaid
-
-                    else if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid' ||
+                    if ($purchase[0]->PaymentStatus_Name == 'Fully Paid' || $purchase[0]->PaymentStatus_Name == 'fully paid' ||
                              $purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
                              $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
                     {
@@ -403,12 +396,20 @@ class TransactionController extends Controller
                             else if ($purchase[0]->PaymentStatus_Name == 'Partially Paid' || $purchase[0]->PaymentStatus_Name == 'partially paid' ||
                                     $purchase[0]->PaymentStatus_Name == 'Half Paid' || $purchase[0]->PaymentStatus == 'half paid')
                                 $costLeft = $purchase[0]->Purchase_TotalPrice / 2;
-                            else 
-                                $costLeft = $purchase[0]->Purchase_TotalPrice;
-                           
+
                             return view('pages.purchase.manage_cancel', compact('title', 'purchase', 'costLeft'));
                         }
                     } // if fully paid or partially paid
+                    else if ($purchase[0]->PaymentStatus_Name == 'Refunded' || $purchase[0]->PaymentStatus_Name == 'refunded')
+                    {
+                        $status = "Your transaction is already been cancelled or refunded.";
+                        return view('pages.purchase.manage', compact('title', 'status'));
+                    }
+                    else
+                    {
+                        $status = "Sorry, but your transaction cannot be cancelled and refunded.";
+                        return view('pages.purchase.manage', compact('title', 'status'));
+                    }
                     
                 }
             }
@@ -443,9 +444,13 @@ class TransactionController extends Controller
         } // if the chosen option is 'Other' then the statement of reason is required.
 
         if ($difference->days < 1)
+        {
             $elapseDays = 1;
+        }
         else
+        {
             $elapseDays = $difference->days + 1;
+        }
         try
         {
             // return $request->all();
@@ -458,13 +463,18 @@ class TransactionController extends Controller
                                         ->join('paymenthistory', 'paymenthistory.Payment_Id', '=', 'payment.Payment_Id')
                                         ->where('purchase.Purchase_Id', '=', $request->purchaseId)
                                         ->get();
-            if ($purchasePrice[0]->PaymentStatus_Name == 'Unpaid' || $purchasePrice[0]->PaymentStatus_Name == 'unpaid')
-                $price = 0.00;
-            else if ($purchasePrice[0]->PaymentStatus == 'Partially Paid' || $purchasePrice[0]->PaymentStatus == 'partially paid' ||
+            // if ($purchasePrice[0]->PaymentStatus_Name == 'Unpaid' || $purchasePrice[0]->PaymentStatus_Name == 'unpaid')
+            //     $price = 0.00;
+            // else
+             if ($purchasePrice[0]->PaymentStatus == 'Partially Paid' || $purchasePrice[0]->PaymentStatus == 'partially paid' ||
                      $purchasePrice[0]->PaymentStatus_Name == 'Half Paid' || $purchasePrice[0]->PaymentStatus == 'half paid')
-                $price = $purchasePrice[0]->Purchase_TotalPrice / 2;
+             {
+                 $price = $purchasePrice[0]->Purchase_TotalPrice / 2;
+             }
             else
+            {
                 $price = $purchasePrice[0]->Purchase_TotalPrice;
+            }
 
             $rate_id = $rate[0]->ReserveCancellationPercentage_Id;
             $rate = $rate[0]->ReserveCancellationPercentage_PercentageReturn / 100;
@@ -486,6 +496,10 @@ class TransactionController extends Controller
         catch (Exception $e)
         {
             return back();
+        }
+        catch(FatalErrorException $e)
+        {
+            return back();   
         }
 
     }

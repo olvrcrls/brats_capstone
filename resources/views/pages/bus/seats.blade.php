@@ -16,6 +16,11 @@
 						<li>
 							2. Click the <b class="green-text"><u>PROCEED <i class="fa fa-check"></i></u></b> button to proceed and purchase your reservations.
 						</li>
+						@if ($seating->floors > 1)
+						<li>
+							3. On the right side of the <b>Number of Passengers left</b>, is the current floor of the bus. Click the <span class="red-text">red Floor button</span> to change floors.
+						</li>
+						@endif
 						<li>&nbsp;
 							<p>Tip: If you made a mistake to your seating arrangement. Just click the chosen seat again to remove the person on the chair.</p>
 						</li>
@@ -25,9 +30,17 @@
 		</div>
 		<div class="row col s12 col m12">
 			<h5 class="flow-text center"><b>Bus Seating Arrangement</b></h5>
-			<div class="row col s6 col m6">
+			<div class="row col s6 col m12">
 				<span class="flow-text">Number of passengers left: <span class="red-text">@{{ passengers_left }}</span> </span>
 				<input type="hidden" id="totalPassengers" v-model="passengers_left" value="{{ $trip->totalPassengers }}">
+
+				<button class="btn red right waves-effect waves-light" v-if="secondFloor && selectedFloor == 2" @click="toggleFloor()">
+					<b>SECOND FLOOR</b>
+				</button>
+				<button class="btn red right waves-effect waves-light" v-if="secondFloor && selectedFloor == 1" @click="toggleFloor()">
+					<b>FIRST FLOOR</b>
+				</button>
+				<span class="right flow-text" style="margin-right: 20px;" v-if="secondFloor"><b>Current Floor:</b></span>
 			</div>
 			<div class="col s12 col m12">
 				<form name="checkOutForm" method="POST" action="{{ url('/book_seats/iterate') }}" accept-charset="utf-8" autocomplete="off"
@@ -47,9 +60,11 @@
 					<input type="hidden" value="{{ $seating->rightColumn }}" v-model="rightColumn">
 					<input type="hidden" value="{{ $seating->totalRows }}" v-model="totalRows">
 					<input type="hidden" value="{{ $seating->rowPerColumn }}" v-model="rowPerColumn">
-
+					<input type="hidden" value="{{ $seating->floors }}" v-model="floors">
 					<!-- DISPLAYING SEATING ARRANGEMENT -->
 					<table id="seat_table" class="bordered amber lighten-3">
+						@if ($seating->floors == 1)
+						<!-- Structure for one floor bus only -->
 						<tbody>
 							@if ( isset($seats) || $seats->count() )
 							<tr>
@@ -242,7 +257,439 @@
 					@endif
 							</tr>
 						</tbody>
+						</table>
+				 @elseif ($seating->floors > 1)
+				 	<!-- 2nd floor bus structures -->
+				 	<tbody v-show="selectedFloor == 1">
+				 		<?php $ctrChair = 1; $middleChair = 0?>
+				 			@if ( isset($seats) || $seats->count() )
+							<tr>
+							@foreach($seats as $seat)
+							<!-- {{$ctrRow}} -->
+								@if ($ctrRow == $seating->totalRows+1 || $ctrRow == ($seating->totalRows*$seating->leftColumn+2) || $ctrRow == $seating->totalRows*($seating->leftColumn+1)+2)
+									@if ($seat->BusSeatStatus_Name == 'Open' || $seat->BusSeatStatus_Name == 'open' || $seat->BusSeatStatus_Name == 'Available' || $seat->BusSeatStatus_Name == 'available')
+											<td>
+												
+												<a id="{{ $seat->BusSeat_Number}}" href="#!" >
+													<img src="/images/available_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+														id="{{ $seat->BusSeat_Number }}" 
+														v-on:click.self="reserve($event)" title="Available seat."
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+												
+											</td> 
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 1 -->
+									@elseif ($seat->BusSeatStatus_Name == 'Queue' || $seat->BusSeatStatus_Name == 'queue' || $seat->BusSeatStatus_Name == 'On Queue' || $seat->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" height="{{ $height }}px" width="{{ $width }}px" title="Seat is on process of reservation." title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+
+									@elseif ($seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 2 -->
+									@elseif ($seat->BusSeatStatus_Name == 'Taken' || $seat->bus_seat_statuses->BusSeat_tatus_Name == 'taken')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 3 -->
+									@endif
+								@elseif ( $ctrRow == ($seating->totalRows*$seating->rightColumn)+1 )
+										<?php $middleChair = $ctrChair ?>
+										<tr>
+											@for($i = 1; $i<$seating->totalRows; $i++)
+												<td></td>
+											@endfor
+											<?php $ctrRow+= ($seating->totalRows-1); ?>
+									@if ($seat->BusSeatStatus_Name == 'Open' || $seat->BusSeatStatus_Name == 'open' || $seat->BusSeatStatus_Name == 'Available' || $seat->BusSeatStatus_Name == 'available')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Number }}">
+													<img src="/images/available_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+														id="{{ $seat->BusSeat_Number }}" 
+														v-on:click.self="reserve($event)" title="Available seat."
+													/>														
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 4 -->
+
+									@elseif ($seat->BusSeatStatus_Name == 'Queue' || $seat->BusSeatStatus_Name == 'queue' || $seat->BusSeatStatus_Name == 'On Queue' || $seat->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" 
+													height="{{ $height }}px" width="{{ $width }}px" title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+									
+
+									@elseif ($seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 5 -->
+									@elseif ($seat->BusSeatStatus_Name == 'Taken' || $seat->BusSeatStatus_Name == 'taken')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 6 -->
+									@endif
+								@else
+									@if ($seat->BusSeatStatus_Name == 'Open' || $seat->BusSeatStatus_Name == 'open' || $seat->BusSeatStatus_Name == 'Available' || $seat->BusSeatStatus_Name == 'available')
+										<td>
+												<a href="#!" id="{{ $seat->BusSeat_Number }}">
+													<img src="/images/available_seat.png" alt="available_seat_icon"
+														 height="{{ $height }}px" width="{{ $width }}px"
+														 id="{{ $seat->BusSeat_Number }}" 
+														 v-on:click.self="reserve($event)"
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+										</td>
+										@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+										@endif
+										<?php $ctrChair++; ?>
+										<!-- CONDITION 7 -->
+
+									@elseif ($seat->BusSeatStatus_Name == 'Queue' || $seat->BusSeatStatus_Name == 'queue' || $seat->BusSeatStatus_Name == 'On Queue' || $seat->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+									
+
+									@elseif ( $seat->BusSeatStatus_Name == 'Reserved' || $seat->BusSeatStatus_Name == 'reserved' || $seat->BusSeatStatus_Name == 'Reserve' || $seat->BusSeatStatus_Name == 'reserve')
+										<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+										</td>
+										@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+										<!-- CONDITION 8 -->
+									@elseif ( $seat->BusSeatStatus_Name == 'Taken' || $seat->BusSeatStatus_Name == 'taken')
+										<td>
+												<a href="#!" id="{{ $seat->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seat->BusSeat_Number }}</b>
+										</td>
+										<!-- CONDITION 9 -->
+										@if (($ctrRow % $seating->rowPerColumn) == 0)
+												</tr>
+										@endif
+										<?php $ctrChair++; ?>
+									@endif
+							@endif	
+							<?php 
+								if ($ctrChair > ceil($seating->capacity / 2))
+								{
+									$ctrRow = substr(strstr($seat->BusSeat_Number, 's'), 1);
+									$ctrChair = 1;
+									break;
+								}
+								else
+									$ctrRow++; 
+							?>
+						@endforeach
+					@endif
+					</tr>	
+					</tbody>
+					<tbody v-else>
+						<!-- <tr>
+							<td>Second Floor</td>
+						</tr> -->
+					 	@if (isset($seats) || $seats->count())
+
+					 	<tr>
+					 		@for ($ctrRow; $ctrRow < $seating->capacity; $ctrRow+1)	 	
+					 			<!-- {{ $ctrRow }} -->
+					 			@if ($ctrRow == $seating->totalRows+1 || $ctrRow == ($seating->totalRows*$seating->leftColumn+2) || $ctrRow == $seating->totalRows*($seating->leftColumn+1)+2)	
+					 				@if ($seats[$ctrRow]->BusSeatStatus_Name == 'Open' || $seats[$ctrRow]->BusSeatStatus_Name == 'open' || $seats[$ctrRow]->BusSeatStatus_Name == 'Available' || $seats[$ctrRow]->BusSeatStatus_Name == 'available')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Number }}">
+													<img src="/images/available_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+														id="{{ $seats[$ctrRow]->BusSeat_Number }}" 
+														v-on:click.self="reserve($event)" title="Available seat."
+													/>														
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 1 -->
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'On Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" 
+													height="{{ $height }}px" width="{{ $width }}px" title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+									
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'Reserve' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserve')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 5 -->
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Taken' || $seats[$ctrRow]->BusSeatStatus_Name == 'taken')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 2 -->
+									@endif
+								@elseif ($ctrChair == ($seating->totalRows * $seating->rightColumn) + 1)
+									<?php $saveMiddleChair = $ctrChair; ?>
+									<tr>
+											@for($i = 1; $i < $seating->totalRows; $i++)
+												<td></td>
+											@endfor
+											<?php $ctrChair+= ($seating->totalRows-1); ?>
+					 				@if ($seats[$ctrRow]->BusSeatStatus_Name == 'Open' || $seats[$ctrRow]->BusSeatStatus_Name == 'open' || $seats[$ctrRow]->BusSeatStatus_Name == 'Available' || $seats[$ctrRow]->BusSeatStatus_Name == 'available')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Number }}">
+													<img src="/images/available_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+														id="{{ $seats[$ctrRow]->BusSeat_Number }}" 
+														v-on:click.self="reserve($event)" title="Available seat."
+													/>														
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php 
+											$ctrChair++; ?>
+											<!-- CONDITION 3 -->
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'On Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" 
+													height="{{ $height }}px" width="{{ $width }}px" title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php 
+											$ctrChair++; ?>
+									
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'Reserve' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserve')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php
+											 $ctrChair++; ?>
+											<!-- CONDITION 4 -->
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Taken' || $seats[$ctrRow]->BusSeatStatus_Name == 'taken')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php 
+											$ctrChair++; ?>
+											<!-- CONDITION 5 -->
+									@endif
+								@else
+									@if ($seats[$ctrRow]->BusSeatStatus_Name == 'Open' || $seats[$ctrRow]->BusSeatStatus_Name == 'open' || $seats[$ctrRow]->BusSeatStatus_Name == 'Available' || $seats[$ctrRow]->BusSeatStatus_Name == 'available')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Number }}">
+													<img src="/images/available_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+														id="{{ $seats[$ctrRow]->BusSeat_Number }}" 
+														v-on:click.self="reserve($event)" title="Available seat."
+													/>														
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 6 -->
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'On Queue' || $seats[$ctrRow]->BusSeatStatus_Name == 'on queue')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/selected_seat.png" alt="available_seat_icon" 
+													height="{{ $height }}px" width="{{ $width }}px" title="Seat is already in other process of reservation" 
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+									
+
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserved' || $seats[$ctrRow]->BusSeatStatus_Name == 'Reserve' || $seats[$ctrRow]->BusSeatStatus_Name == 'reserve')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}" title="Already reserved">
+													<img src="/images/reserved_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px"
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 7 -->
+									@elseif ($seats[$ctrRow]->BusSeatStatus_Name == 'Taken' || $seats[$ctrRow]->BusSeatStatus_Name == 'taken')
+											<td>
+												<a href="#!" id="{{ $seats[$ctrRow]->BusSeat_Id }}">
+													<img src="/images/taken_seat.png" alt="available_seat_icon" 
+														height="{{ $height }}px" width="{{ $width }}px" title="The seat is already purchased."
+													/>
+												</a>
+												<b>{{ $seats[$ctrRow]->BusSeat_Number }}</b>
+											</td>
+											@if (($ctrChair % $seating->rowPerColumn) == 0)
+												</tr>
+											@endif
+											<?php $ctrChair++; ?>
+											<!-- CONDITION 8 -->
+									@endif
+								@endif
+					 			<?php 
+									if ($ctrChair > $seating->capacity)
+										break;
+									else
+										$ctrRow++; 
+								?>
+					 		@endfor	
+					 	@endif
+				 		</tr>
+				 	</tbody>
 					</table><br>
+				@endif
 			</div>
 		</div>
 		<div class="row col s12 col m12">

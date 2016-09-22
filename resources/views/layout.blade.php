@@ -31,7 +31,19 @@
 <body class="blue-grey lighten-5"> 
     <nav class="yellow accent-3 z-depth-1">
             <div class="brats-border nav-wrapper">
-                <a href="/" class="brand-logo black-text"><b>Bus Reservation And Ticketing System </b><i class="fa fa-bus"></i></a>
+                <?php  
+                    use App\utilities_company as Utilities;
+                    try
+                    {
+                        $brand = Utilities::select('UtilitiesCompanyInfo_CompanyName')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
+                        $brand = $brand[0]->UtilitiesCompanyInfo_CompanyName;
+                    }
+                    catch (Exception $e)
+                    {
+                        $brand = 'Bus Reservation and Ticketing System';
+                    }
+                ?>
+                <a href="/" class="brand-logo black-text"><b>{{ $brand }}</b> <i class="fa fa-bus"></i></a>
                 <a href="#!" data-activates="mobile-demo" class="button-collapse black-text"><i class="fa fa-bars"></i></a>
                 <ul class="right hide-on-med-and-down">
                     <li><a class="black-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
@@ -56,7 +68,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">
-                        <h5 class="black-text text-darken-3">Bus Reservation And Ticketing System</h5>
+                        <h5 class="black-text text-darken-3">{{ $brand }}</h5>
                         <p class="white-text text-accent-3">Online Reservation of your desire Trips with your preferred Seats</p>
                     </div>
                     <div class="col l4 offset-l2 s12">
@@ -74,7 +86,7 @@
           
             <div class="footer-copyright">
                 <div class="container brown-text text-accent-3">
-                    &copy; BSIT 4-1D JJJLOR {{ date('Y') }} Copyright
+                    &copy; BSIT 4-1D JJJLOR {{ date('Y') }} Copyright. All rights reserved. Yes, all of it.
                    <!--  <a class="blue-text right" href="#!">More Links</a> -->
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @extends('layout')
 @section('content')
-<div class="brats-border">
+<div class="brats-border" style="padding-bottom: 100px;">
 		<div class="row">
 			<div class="col s8 col m8">
 				<h3 class="teal-text">{{ $dispatch_schedules[0]->route }} <i class="fa fa-btn fa-map-marker"></i></h3>

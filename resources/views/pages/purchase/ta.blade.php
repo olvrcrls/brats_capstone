@@ -34,7 +34,7 @@
 					<p class="flow-text">
 						- <!-- Reserved tickets should be paid <b>before</b> the departure of the said trip. Failure to comply, the reservation will be voided and
 					      the reserved seats will be given oppurtunity to the other commuters inside the terminal. -->
-					      Reserved seats should be paid <b>{{ $totalDays }} days or less</b> after the reservation date. Failure to comply, the reservation of the seats will be voided and these will be opened to other online customers for reservation.
+					      Reserved seats should be at least half-paid in <b>{{ $voidDays }} days or less</b> after the reservation date. Failure to comply, the reservation of the seats will be voided and these will be opened to other online customers for reservation.
 					</p>
 				</li>
 				<li>
@@ -65,7 +65,7 @@
 				</li>
 				<li>
 					<p class="flow-text">
-						- Reservations that are still unpaid, must be half-paid or fullypaid <b>3 days or less after the reservation date</b> of the reservation else the reservation will be voided.
+						- Reservations that are still unpaid, must be half-paid or fullypaid <b>{{ $totalDays }} or less after the reservation date</b> of the reservation else the reservation will be voided.
 					</p>
 				</li>
 				<li>

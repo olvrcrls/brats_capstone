@@ -4,14 +4,14 @@
 	<img 
 		src='<?php echo $message->embed("./logo.png"); 
 		// embedding the image of the company logo here
-	?>' width='100px' height='100px'>
-	<b><u>BUS RESERVATION AND TICKETING SYSTEM COMPANY</u></b>
+	?>' width='130px' height='100px'>
+	<b><u>{{ $companyName }}</u></b>
 </h3>
 <br>
 <hr>
 <br>
 E-Mail Transaction date: {{ date('m-d-Y') }} <br><br>
-Greetings, Mr./Ms. {{ $customer_name }} <br>
+Greetings, Mr./Ms. {{ ucwords($customer_name) }} <br>
 <br>
 <br>
 You made an online reservation transaction with a <b>Transaction Number: {{ $transaction_number }}.</b><br>
@@ -25,6 +25,6 @@ This e-mail has an attachment of back-up e-payment voucher for your transaction.
 E-Voucher is only valid for a number of days to transact (please check the Instructions). For more information & inquiries, please send an e-mail to support@brats.com <br> <br>
 <br>
 <br>
-- Bus Reservation And Ticketing System (BRATS) Support.
+- {{ $companyName }} Support.
 </body>
 </html>

@@ -9,7 +9,7 @@
 					<div class="card-content black-text">
 						<div>
 						<center>
-							<h3 class='title'>Bus Reservation And Ticketing System Company</h3>
+							<h3 class='title'>{{ $info->companyName }}</h3>
 							<h4>123 Saint Bernard Street, Brgy. Tibay, San Juan City Metro Manila Philippines</h4>
 							<hr>
 							&nbsp;
@@ -125,7 +125,7 @@
 										<br>
 										Bring this voucher for refunds and cancellations of online reservations to the origin terminal.
 										<br><br>
-										I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the Bus Company website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the Bus Reservation And Ticketing System Company.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
+										I expressly agree to the Terms of Use, have read and understand the Terms & Agreement Policy, and confirm that the information that I have provided to the {{ $info->companyName }} website are true and correct to the best of my knowledge.  <br>My submission of this form will constitute my consent to the collection and use of my information and the transfer of information for processing and storage by the {{ $info->companyName }}.  <br>Furthermore, I agree and understand that I am legally responsible for the information I entered in the Online Provincial Bus Reservation System and if I violate its Terms of Service my reservation may be revoked or my transaction will be voided.
 									</i> 
 									<br>
 								</p>

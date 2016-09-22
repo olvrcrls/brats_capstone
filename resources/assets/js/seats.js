@@ -19,6 +19,9 @@ let vm = new Vue({
 		'totalRows': null,
 		'rowPerColumn': null,
 		'pickedSeats': [],
+		'secondFloor': false,
+		'floors': 1,
+		'selectedFloor': 1,
 
 		/*
 		 *	Variables for the seleced seats and the loaded seat data from ajax in the api URL
@@ -214,6 +217,14 @@ let vm = new Vue({
 				document.checkOutForm.submit();
 			},
 
+			toggleFloor()
+			{
+				if (this.selectedFloor == 1)
+					this.selectedFloor = 2
+				else
+					this.selectedFloor = 1
+			},
+
 			selectedSeat(event) // records and checks if the seat number is already assigned to a passenger
 			{
 				let index = (event.target.id)
@@ -249,6 +260,15 @@ let vm = new Vue({
 				
 			} //selectedSeat
 	},//methods	
+	ready()
+	{
+		if (this.floors == 2)
+		{
+			this.secondFloor = true
+		}
+		else
+			this.secondFloor = false
+	}
 }) //Vue instance
 
 window.onbeforeunload = function (e) {
