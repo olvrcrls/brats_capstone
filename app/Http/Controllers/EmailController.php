@@ -46,7 +46,7 @@ class EmailController extends Controller
 
        $onlineFee = $this->getOnlineFee(); 
 
-    	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
+    	$customer_name = ucwords($customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName);
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
         try
@@ -58,7 +58,9 @@ class EmailController extends Controller
         {
             $numberOfDays = 3;
         }
-    	$valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
+    	$purchaseDate = new\DateTime($purchase->Purchase_Date);
+        $expireDate = date_format(date_add($purchaseDate, date_interval_create_from_date_string("$numberOfDays days")), 'm/d/Y');
+        $valid = $expireDate; // voucher will expire a number of days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */
@@ -486,7 +488,7 @@ class EmailController extends Controller
 
        $onlineFee = $this->getOnlineFee(); 
 
-    	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
+    	$customer_name = ucwords($customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName);
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
     	try
@@ -498,7 +500,11 @@ class EmailController extends Controller
         {
             $numberOfDays = 3;
         }
-        $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
+        // $purchaseDate = date_create($purchase->Purchase_Date, 'm/d/Y');
+        // $valid = date($purchaseDate, strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
+        $purchaseDate = new\DateTime($purchase->Purchase_Date);
+         $expireDate = date_format(date_add($purchaseDate, date_interval_create_from_date_string("$numberOfDays days")), 'm/d/Y');
+         $valid = $expireDate; // voucher will expire a number of days from the (reservation) date today.
     	/*
     	 * CREATING PDF OUTPUT
     	 */
@@ -896,7 +902,7 @@ class EmailController extends Controller
                                    ->get();
 
        $onlineFee = $this->getOnlineFee(); 
-    	$customer_name = $customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName;
+    	$customer_name = ucwords($customer->OnlineCustomer_FirstName.' '.$customer->OnlineCustomer_MiddleName.' '.$customer->OnlineCustomer_LastName);
     	$departure_date = date_format(date_create($dispatch[0]->TravelDispatch_Date), 'm/d/Y');
     	$route = $dispatch[0]->Route_Name;
     	try
@@ -908,7 +914,10 @@ class EmailController extends Controller
         {
             $numberOfDays = 3;
         }
-        $valid = date('m/d/Y', strtotime("+$numberOfDays days")); // voucher will expire 3 days from the (reservation) date today.
+         
+         $purchaseDate = new\DateTime($purchase->Purchase_Date);
+         $expireDate = date_format(date_add($purchaseDate, date_interval_create_from_date_string("$numberOfDays days")), 'm/d/Y');
+         $valid = $expireDate; // voucher will expire a number of days from the (reservation) date today.
     	/*
     	 * CREATING PDF FILE
     	 */

@@ -24,7 +24,8 @@ use App\payment_history as PaymentHistory;
 use App\travel_dispatch as Dispatch;
 use App\reserve_cancellation_percentage as Percentage;
 use App\reserve_cancellation as Cancellation;
-
+use App\reservation_days_to_void as Void;
+use App\utilities_company as Utilities;
 class TransactionController extends Controller
 {
     public function input(Request $request)
@@ -260,18 +261,45 @@ class TransactionController extends Controller
                     return view('pages.purchase.manage', compact('title', 'status'));
                 }
 
-                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $customerInformation[0]->Purchase_Id);
+                $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $customerInformation[0]->Purchase_Id)->get();
                 $today = date('m/d/Y');
                 $purchaseDate = date_format(date_create($customerInformation[0]->Purchase_Date), 'm/d/Y'); // converts into Month/Day/Year of the purchaseDate
-                $expireDate = date('m/d/Y', strtotime($purchaseDate. '+ 3 days')); // computes the expiration date
+                try
+                {
+                    $voidDays = Void::select('ReservationDaysToVoid_Days')->orderBy('ReservationDaysToVoid_Id', 'desc')->take(1)->get();
+                    $voidDays = $voidDays[0]->ReservationDaysToVoid_Days;
+                    $expireDate = date('m/d/Y', strtotime($purchaseDate. "+ $voidDays days")); // computes the expiration date
+                }
+                catch(Exception $e)
+                {
+                    $expireDate = date('m/d/Y', strtotime($purchaseDate. '+ 3 days')); // computes the expiration date    
+                }
+                // $expireDate = date('m/d/Y', strtotime($purchaseDate. '+ 3 days')); // computes the expiration date
 
                 $customer = new\stdClass;
                 $customer->OnlineCustomer_Id = $customerInformation[0]->OnlineCustomer_Id;
                 $customer->Purchase_Id = $customerInformation[0]->Purchase_Id;
                 $customer->name = $customerInformation[0]->OnlineCustomer_FirstName.' '.$customerInformation[0]->OnlineCustomer_LastName;
+                
                 if ($today > $expireDate)
                 {
-                    $customer->expired = true;
+                    $customer->expire = true;
+                    try
+                    {
+                        $email = Utilities::select('UtilitiesCompanyInfo_EmailAddress')->orderBy('UtilitiesCompanyInfo_Id', 'desc')
+                                 ->take(1)->get();
+                        if (!$email->count())
+                        {
+                            $customer->contact = 'bratscapstone@gmail.com';
+                        }
+                        else
+                            $customer->contact = $email[0]->UtilitiesCompanyInfo_EmailAddress;
+                    }
+                    catch (Exception $e)
+                    {
+                        $customer->contact = 'bratscapstone@gmail.com';    
+                    }
+                    
                 } // checks if the voucher is already expired.
                 if ($isCancelled->count())
                 {

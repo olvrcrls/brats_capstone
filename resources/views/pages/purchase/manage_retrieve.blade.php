@@ -14,21 +14,23 @@
 				<span class="flow-text">
 				  	<b>
 				  		<u>This transaction has already requested a cancellation/refund request.</u> <br><br>
-				  		Please contact the customer service at bratscapstone@gmail.com, for more information.
+				  		Please contact the customer service at {{ $customer->contact }}, for more information.
 				  	</b>
 				 </span>
 			</div>
 		</div>
+		
 		@endif
-		@if (isset($customer->expired))
-		<!-- Displays if the voucher is already expired -->
+		@if (isset($customer->expire))
 		<div class="row">
-			<div class="card orange darken-1 white-text z-depth-2 col s8 col m8">
-				<h5>
+			<div class="card red darken-1 white-text z-depth-2 col s8 col m8">
+			<br>&nbsp;
+				<span class="flow-text">
 				  	<b>
-				  		<u>This E-Voucher is already expired.</u> <br><br> If you haven't been fully paid or paid an installment, your transaction is already forfeited.
+				  		<u>This E-Voucher is not valid anymore because it is already expired.</u> <br><br>
+				  		Please contact the customer service at {{ $customer->contact }}, for more information.
 				  	</b>
-				 </h5>
+				 </span>
 			</div>
 		</div>
 		@endif
@@ -36,7 +38,7 @@
 			<div class="card grey lighten-2 flow-text black-text z-depth-2 col s8 col m8">
 				<h4>Instructions:</h4>
 				<span>
-					Good day, <b>Mr./Ms. {{ $customer->name }}!</b>
+					Good day, <b>Mr./Ms. {{ ucwords($customer->name) }}!</b>
 					<br> Please choose thru the following instructions of ways to retrieve your E-Voucher.
 				</span>
 				<ul>

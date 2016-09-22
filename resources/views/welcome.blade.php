@@ -30,7 +30,7 @@
                                     <div class="input-field col s12">
                                         <div class="select-wrapper">
                                             <select id = "from" name = "origin" onchange="fetch_select(this.value);">
-                                                <option value="" disabled="" selected="">Choose Terminal Origin</option>
+                                                <option value="" disabled="" selected="">Choose Your Origin</option>
                                                 @if ( isset( $terminals ) )
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>
@@ -47,7 +47,7 @@
                                     <div class="input-field col s12">
                                         <div class="select-wrapper">
                                             <select id="destination" name="destination" onchange="fetch_select(this.value);">
-                                                <option value="" disabled="" selected="">Choose Terminal Destination</option>
+                                                <option value="" disabled="" selected="">Choose Your Destination</option>
                                                 @if ( isset( $terminals ) )
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>

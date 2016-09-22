@@ -11,7 +11,6 @@ use App\route as Path;
 use App\trip_type as TripType;
 use App\bus_seat as Seat;
 use App\days_span_to_reserve as ReservationDay;
-
 class ScheduleController extends Controller
 {
     public function show(Request $request)
@@ -84,7 +83,16 @@ class ScheduleController extends Controller
     {
         // return $route;
         $now = date("Y-m-d");
-        $interval = date('Y-m-d', strtotime($now. ' + 3 days')); //since the only allowed days before reserving a ticket is a minimum of 3 days
+        try
+        {
+          $intervalDays = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get(); 
+          $intervalDays = $intervalDays[0]->DaysSpanToReserve_Days;
+        }
+        catch (Exception $e)
+        {
+          $intervalDays = 3;
+        }
+        $interval = date('Y-m-d', strtotime($now. "+ $intervalDays days")); //since the only allowed days before reserving a ticket is a minimum of 3 days
         //All Schedules are picked from a specific route
           $dispatches = Dispatch::select('TravelDispatch_Id', 'traveldispatch.Bus_Id', 'TravelDispatch_Date', 'BusType_Name', 'BusStatus_Name', 'TravelSchedule_Time', 'bustype.BusType_Id')
                   ->join('bus', 'traveldispatch.Bus_Id', '=', 'bus.Bus_Id')
