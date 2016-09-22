@@ -12,52 +12,54 @@
                     @if (isset($no_date))
                     <div class="card red lighten-1 z-depth-3">
                         <div class="card-content white-text">
-                            <b><i class="fa fa-btn fa-remove"></i></b> <span>There is no available trip(s) on that date.</span>
+                            <b><i class="fa fa-btn fa-remove"></i></b> <span>There are no available trip(s) on that date.</span>
                         </div>
                     </div>
                     @endif
-                    <div class="card grey lighten-3 accent-1 z-depth-3">
+                    <div class="card grey lighten-3 accent-1 z-depth-3 hoverable">
+                        <br>
+                        <span class="flow-text" style="margin-left: 20px;">SCHEDULE YOUR BUS TRIP <i class="fa fa-briefcase"></i></span>
                         <div class="card-content black-text">
                             <form method = "POST" action = "{{ url('/travel_schedules') }}" id = "find_travel_form">
                                 {{ csrf_field() }}
                                 <div class = "row">
                                     <div class="input-field col s12" id="divTravelDate">
                                         <input type="date" id="travel_date" class="datepicker" name = "travel_date">
-                                        <label for="travel_date" >Travel Date <i class="fa fa-btn fa-calendar"></i>: </label>
+                                        <label for="travel_date" >Date of Your Trip Is <i class="fa fa-btn fa-calendar"></i>: </label>
                                     </div>
                                 </div>
                                 <div class= "row">
                                     <div class="input-field col s12">
                                         <div class="select-wrapper">
                                             <select id = "from" name = "origin" onchange="fetch_select(this.value);">
-                                                <option value="" disabled="" selected="">Choose Your Origin</option>
+                                                <option value="" disabled="" selected="">Select Your Starting Point</option>
                                                 @if ( isset( $terminals ) )
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>
                                                     @endforeach
                                                 @else
-                                                    <option value="#!" disabled> No available terminal. </option>
+                                                    <option value="#!" disabled> No available terminals, yet. </option>
                                                 @endif
                                             </select>
                                         </div>
-                                        <label>Terminal Origin <i class="fa fa-map-marker"></i>: </label>
+                                        <label>Your Bus Ride Will Be From <i class="fa fa-map-marker"></i>: </label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <div class="select-wrapper">
                                             <select id="destination" name="destination" onchange="fetch_select(this.value);">
-                                                <option value="" disabled="" selected="">Choose Your Destination</option>
+                                                <option value="" disabled="" selected="">Select Your End Point</option>
                                                 @if ( isset( $terminals ) )
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>
                                                     @endforeach
                                                 @else
-                                                    <option value="#!" disabled> No available terminal. </option>
+                                                    <option value="#!" disabled> No available terminals, yet. </option>
                                                 @endif
                                             </select>
                                         </div>
-                                        <label>Terminal Destination <i class="fa fa-map-marker"></i>:</label>
+                                        <label>Your Bus Ride Will Be Travelling To <i class="fa fa-map-marker"></i>:</label>
                                     </div>
                                 </div>
                                 <div class= "row">

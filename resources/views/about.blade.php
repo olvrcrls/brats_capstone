@@ -17,7 +17,7 @@ use App\utilities_company as Utilities;
 		<div class="brats-border">
 		<!-- ERASE THE FOLLOWING TEMPLATE FOR THE BUSINESS INFORMATION -->
 			<p class="flow-text">
-				<b>{{ $brand }}</b> is a Capstone project that is authored by:
+				<b>{{ $brand }}</b> is a Capstone project that is developed and authored by:
 			</p>
 				<ul class="flow-text">
 					<li>
@@ -52,7 +52,8 @@ use App\utilities_company as Utilities;
 				<p class="flow-text">
 					Special thanks to the following that helped us :<br>
 					- Prof. Aleta Fabregas <br>
-					- Prof. AJ Ablir
+					- Prof. AJ Ablir <br>
+					- Lastly and most importantly, to our parents with their everlasting support for our education.
 				</p>
 		</div>
 	</div>

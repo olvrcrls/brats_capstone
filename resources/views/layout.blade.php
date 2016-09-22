@@ -69,7 +69,7 @@
                 <div class="row">
                     <div class="col l6 s12">
                         <h5 class="black-text text-darken-3">{{ $brand }}</h5>
-                        <p class="white-text text-accent-3">Online Reservation of your desire Trips with your preferred Seats</p>
+                        <p class="white-text text-accent-3">Online Reservation of your desire trips with your preferred Seats</p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="black-text text-darken-1"><i class="fa fa-tag"></i> Links</h5>
