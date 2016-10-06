@@ -33,7 +33,7 @@
                                         <div class="select-wrapper">
                                             <select id = "from" name = "origin" onchange="fetch_select(this.value);">
                                                 <option value="" disabled="" selected="">Select Your Starting Point</option>
-                                                @if ( isset( $terminals ) )
+                                                @if (isset( $terminals ))
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>
                                                     @endforeach
@@ -50,7 +50,7 @@
                                         <div class="select-wrapper">
                                             <select id="destination" name="destination" onchange="fetch_select(this.value);">
                                                 <option value="" disabled="" selected="">Select Your End Point</option>
-                                                @if ( isset( $terminals ) )
+                                                @if (isset( $terminals ))
                                                     @foreach( $terminals as $terminal )
                                                         <option value="{{ $terminal->Terminal_Id }}">{{ $terminal->Terminal_Name }}</option>
                                                     @endforeach
@@ -64,7 +64,7 @@
                                 </div>
                                 <div class= "row">
                                     <div class="col s6">
-                                        <button class="btn waves-effect waves-light amber accent-3" type="submit" onclick = "format_date();">
+                                        <button class="btn waves-effect waves-light yellow darken-1" type="submit" onclick = "format_date();">
                                             <b>Search</b> <i class="fa fa-btn fa-search"></i>
                                         </button>
                                     </div>
@@ -75,18 +75,6 @@
                 </div>
             </div>
         </div>
-      <!--   <div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
-            <a class="btn-floating btn-large red">
-                <i class="large mdi-navigation-menu"></i>
-            </a>
-            <ul>
-                <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
-                <li><a class="btn-floating yellow darken-1"><i class="materirnal-icons">format_quote</i></a></li>
-                <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
-                <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
-            </ul>
-        </div>  
-    </div> -->
 @endsection
 @section('footer')
     <script type='text/javascript' src='/js/site_es6.js'></script>

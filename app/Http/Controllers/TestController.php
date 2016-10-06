@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests;
+use App\test_image as Image;
 use App;
 class TestController extends Controller
 {
@@ -386,4 +387,15 @@ class TestController extends Controller
 	// 	$message->to('RECEIVER@MAIL.COM', 'NAME OF THE RECEIVER')->subject('SUBJECT');
 	// });
     }
+
+    // public function image(Request $request)
+    // {
+
+    //     $this->validate($request, ['image' => 'required|image|mimes:jpg,png,gif,bmp,svg|max:2408']);
+    //     $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
+    //     $imageName = addslashes($_FILES['image']['name']);
+    //     Image::insert(['testimage_name' => $imageName, 'testimage_image' => $image]);
+    //     return 'success';
+    //     // $image = addslashes(file_get_contents($))
+    // }
 }

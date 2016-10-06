@@ -39,9 +39,10 @@ class EmailController extends Controller
                               ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
                               ->join('route', 'travelschedule.Route_Id', '=', 'route.Route_Id')
                               ->get();
-        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id')
+        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id', 'BusSeat_Number')
                                    ->where('Purchase_Id', '=',$purchase->Purchase_Id)
                                    ->join('routepathways', 'routepathways.RoutePathWays_Id', '=', 'passengerticket.RoutePathWays_Id')
+                                   ->join('busseat', 'passengerticket.BusSeat_Id', '=', 'busseat.BusSeat_Id')
                                    ->get();
 
        $onlineFee = $this->getOnlineFee(); 
@@ -163,6 +164,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -181,6 +185,9 @@ class EmailController extends Controller
                             foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>
@@ -348,6 +355,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -363,6 +373,9 @@ class EmailController extends Controller
                        foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>
@@ -481,9 +494,10 @@ class EmailController extends Controller
                               ->join('route', 'travelschedule.Route_Id', '=', 'route.Route_Id')
                               ->get();
 
-        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id')
+        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id', 'BusSeat_Number')
                                    ->where('Purchase_Id', '=',$purchase->Purchase_Id)
                                    ->join('routepathways', 'routepathways.RoutePathWays_Id', '=', 'passengerticket.RoutePathWays_Id')
+                                   ->join('busseat', 'passengerticket.BusSeat_Id', '=', 'busseat.BusSeat_Id')
                                    ->get();
 
        $onlineFee = $this->getOnlineFee(); 
@@ -607,6 +621,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -625,6 +642,9 @@ class EmailController extends Controller
                             foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>
@@ -792,6 +812,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -807,6 +830,9 @@ class EmailController extends Controller
                        foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>
@@ -896,9 +922,10 @@ class EmailController extends Controller
                               ->join('route', 'travelschedule.Route_Id', '=', 'route.Route_Id')
                               ->get();
 
-        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id')
+        $tickets = Ticket::select('PassengerTicket_Price', 'RoutePathWays_Place', 'PassengerTicket_Id', 'BusSeat_Number')
                                    ->where('Purchase_Id', '=',$purchase->Purchase_Id)
                                    ->join('routepathways', 'routepathways.RoutePathWays_Id', '=', 'passengerticket.RoutePathWays_Id')
+                                   ->join('busseat', 'passengerticket.BusSeat_Id', '=', 'busseat.BusSeat_Id')
                                    ->get();
 
        $onlineFee = $this->getOnlineFee(); 
@@ -1020,6 +1047,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -1038,6 +1068,9 @@ class EmailController extends Controller
                             foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>
@@ -1205,6 +1238,9 @@ class EmailController extends Controller
                                 <thead>
                                     <tr>
                                         <th rowspan='2' class='voucher_th'>
+                                            Bus Seat Number(s)
+                                        </th>
+                                        <th rowspan='2' class='voucher_th'>
                                             Ticket Number(s)
                                         </th>
                                             <th rowspan='2'>
@@ -1220,6 +1256,9 @@ class EmailController extends Controller
                        foreach($tickets as $ticket)
                             {
                             	$html .= "<tr>
+                                        <td align='center'>".
+                                            $ticket->BusSeat_Number
+                                        ."</td>
                                         <td align='center'>".
                                             $ticket->PassengerTicket_Id
                                         ."</td>

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\terminal as Terminal;
+use App\utilities_company as Utilities;
+use App\test_image as Image;
 
 class HomeController extends Controller
 {

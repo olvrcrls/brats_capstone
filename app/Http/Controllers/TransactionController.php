@@ -344,6 +344,11 @@ class TransactionController extends Controller
                     $status = "This transaction has been cancelled or refunded already.";
                     return view('pages.purchase.manage', compact('title', 'status'));   
                 }
+                else if (ucfirst($infos[0]->PaymentStatus_Name) == 'Void' || ucfirst($infos[0]->PaymentStatus_Name) == 'Voided')
+                {
+                    $status = "This transaction has been already voided.";
+                    return view('pages.purchase.manage', compact('title', 'status'));   
+                }
                 $isCancelled = Cancellation::where('reservecancellation.Purchase_Id', '=', $infos[0]->Purchase_Id);
                 
                 if ($isCancelled->count())

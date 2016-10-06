@@ -28,21 +28,28 @@
         </script>
         @yield('head')
 </head>
+<?php  
+use App\utilities_company as Utilities;
+        try
+        {
+          $brand = Utilities::select('UtilitiesCompanyInfo_CompanyName')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
+          if ($brand->count())
+          {
+          	$brand = $brand[0]->UtilitiesCompanyInfo_CompanyName;	
+          }
+          else
+          {
+          	$brand = 'Bus Reservation and Ticketing System';
+          }
+        }
+        catch (Exception $e)
+        {
+          $brand = 'Bus Reservation and Ticketing System';
+        }
+?>
 <body class="blue-grey lighten-5"> 
     <nav class="yellow accent-3 z-depth-1">
             <div class="brats-border nav-wrapper">
-                <?php  
-                    use App\utilities_company as Utilities;
-                    try
-                    {
-                        $brand = Utilities::select('UtilitiesCompanyInfo_CompanyName')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
-                        $brand = $brand[0]->UtilitiesCompanyInfo_CompanyName;
-                    }
-                    catch (Exception $e)
-                    {
-                        $brand = 'Bus Reservation and Ticketing System';
-                    }
-                ?>
                 <a href="/" class="brand-logo black-text"><b>{{ $brand }}</b> <i class="fa fa-bus"></i></a>
                 <a href="#!" data-activates="mobile-demo" class="button-collapse black-text"><i class="fa fa-bars"></i></a>
                 <ul class="right hide-on-med-and-down">
