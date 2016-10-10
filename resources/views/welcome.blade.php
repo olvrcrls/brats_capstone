@@ -5,6 +5,25 @@
     <script src="/js/index/app.js"></script>
 @endsection
 @section('content')
+    <?php 
+        use App\utilities_company as Utilities;
+        try
+        {
+          $color = Utilities::select('UtilitiesCompanyInfo_PrimaryColor')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
+          if ($color->count())
+          {
+            $color = $color[0]->UtilitiesCompanyInfo_PrimaryColor;
+          }
+          else
+          {
+            $color = 'yellow';
+          }
+        }
+        catch (Exception $e)
+        {
+          $color = 'yellow';
+        }
+    ?>
     <div class="container">
             <br><br>
             <div class = "row">
@@ -12,7 +31,7 @@
                     @if (isset($no_date))
                     <div class="card red lighten-1 z-depth-3">
                         <div class="card-content white-text">
-                            <b><i class="fa fa-btn fa-remove"></i></b> <span>There are no available trip(s) on that date.</span>
+                            <b><i class="fa fa-btn fa-remove"></i></b> <span>There are no available trip(s) on that selection.</span>
                         </div>
                     </div>
                     @endif
@@ -64,7 +83,7 @@
                                 </div>
                                 <div class= "row">
                                     <div class="col s6">
-                                        <button class="btn waves-effect waves-light yellow darken-1" type="submit" onclick = "format_date();">
+                                        <button class="btn waves-effect waves-light {{ strtolower($color) }} darken-1" type="submit" onclick = "format_date();">
                                             <b>Search</b> <i class="fa fa-btn fa-search"></i>
                                         </button>
                                     </div>

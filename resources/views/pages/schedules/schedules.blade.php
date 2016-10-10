@@ -21,7 +21,6 @@
 				<tr class>
 					<th class="center">Bus Number</th>
 					<th class="center">Bus Type</th>
-					<th class="center">Bus Status</th>
 					<th class="center">Routes (Origin - Destination)</th>
 					<th class="center">Date of Departure</th>
 					<th class="center">Time of Departure</th>
@@ -31,9 +30,6 @@
 			<tbody>
 				@if ( !isset($dispatch_schedules) || empty($dispatch_schedules) )
 					<tr>
-						<td class="center">
-							No Available
-						</td>
 						<td class="center">
 							No Available
 						</td>
@@ -72,7 +68,6 @@
 						<tr>
 							<td class="center">{{ $schedule->bus }}</td>
 							<td class="center">{{ $schedule->bustype }}</td>
-							<td class="center">{{ $schedule->status }}</td>
 							<td class="center">{{ $schedule->route }}</td>
 							<td class="center">{{ date_format(date_create($schedule->travel_date), "m-d-Y") }}</td>
 							<td class="center">{{ date_format(date_create($schedule->time), "h:i:s a") }}</td>
@@ -90,9 +85,7 @@
 								</div>
 							</td>
 							<td>
-								@if ((strtolower($schedule->status) == 'on queue' || strtolower($schedule->status) == 'queue' ||
-										strtolower($schedule->status) == 'available') &&
-										!($schedule->seats <= 0))
+								@if (!($schedule->seats <= 0))
 										<button type="submit" class="btn btn-primary green">
 											BOOK SEATS <i class="fa fa-btn fa-location-arrow"></i>
 										</button>

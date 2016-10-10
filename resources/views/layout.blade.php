@@ -32,37 +32,45 @@
 use App\utilities_company as Utilities;
         try
         {
-          $brand = Utilities::select('UtilitiesCompanyInfo_CompanyName')->orderBy('UtilitiesCompanyInfo_Id', 'desc')->get();
+          $brand = Utilities::select('UtilitiesCompanyInfo_CompanyName', 'UtilitiesCompanyInfo_PrimaryColor', 'UtilitiesCompanyInfo_SecondaryColor')
+                             ->orderBy('UtilitiesCompanyInfo_Id', 'desc')
+                             ->get();
           if ($brand->count())
           {
-          	$brand = $brand[0]->UtilitiesCompanyInfo_CompanyName;	
+          	$color = $brand[0]->UtilitiesCompanyInfo_PrimaryColor;
+            $secondColor = $brand[0]->UtilitiesCompanyInfo_SecondaryColor;
+            $brand = $brand[0]->UtilitiesCompanyInfo_CompanyName;	
           }
           else
           {
           	$brand = 'Bus Reservation and Ticketing System';
+            $color = 'yellow';
+            $secondColor = 'black';
           }
         }
         catch (Exception $e)
         {
           $brand = 'Bus Reservation and Ticketing System';
+          $color = 'yellow';
+          $secondColor = 'black';
         }
 ?>
 <body class="blue-grey lighten-5"> 
-    <nav class="yellow accent-3 z-depth-1">
+    <nav class="{{ strtolower($color) }} z-depth-1">
             <div class="brats-border nav-wrapper">
-                <a href="/" class="brand-logo black-text"><b>{{ $brand }}</b> <i class="fa fa-bus"></i></a>
+                <a href="/" class="brand-logo {{ strtolower($secondColor) }}-text"><b>{{ $brand }}</b> <i class="fa fa-bus"></i></a>
                 <a href="#!" data-activates="mobile-demo" class="button-collapse black-text"><i class="fa fa-bars"></i></a>
                 <ul class="right hide-on-med-and-down">
-                    <li><a class="black-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
-                    <li><a class="black-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>                    
-                    <li><a class="black-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>                    
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
                     <!-- <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li> -->
-                    <li><a class="black-text" href="{{ url('/about') }}"><i class="fa fa-users"></i> About Us</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/about') }}"><i class="fa fa-users"></i> About Us</a></li>
                 </ul>
                 <ul class="side-nav" id="mobile-demo">
-                    <li><a class="black-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
-                    <li><a class="black-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>
-                    <li><a class="black-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/routes') }}"><i class="fa fa-btn fa-road"></i> Route & Schedule Details</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/') }}"><i class="fa fa-btn fa-calendar"></i> Schedule A Trip</a></li>
+                    <li><a class="{{ strtolower($secondColor) }}-text" href="{{ url('/manage/trip') }}"><i class="fa fa-btn fa-cogs"></i> Manage Booked Trip</a></li>
                     <!-- <li><a class="black-text" href="{{ url('/contact') }}"><i class="fa fa-phone"></i> Contact Us</a></li> -->
                     <li><a class="black-text" href="{{ url('/about') }}"><i class="fa fa-users"></i> About Us</a></li>
                 </ul>
@@ -71,7 +79,7 @@ use App\utilities_company as Utilities;
 
     @yield('content')
 
-        <footer class="page-footer yellow darken-1">
+        <footer class="page-footer {{ strtolower($color) }} darken-1">
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">

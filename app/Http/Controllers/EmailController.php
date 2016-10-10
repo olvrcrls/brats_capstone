@@ -201,15 +201,18 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td align='right'><b>---------------------------</b></td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td align='right'>Total:</td>
                                         <td align='right'><b>Php $purchase->Purchase_TotalPrice</b></td>
@@ -389,15 +392,18 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td align='right'><b>---------------------------</b></td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td align='right'>Total:</td>
                                         <td align='right'><b>Php $purchase->Purchase_TotalPrice</b></td>
@@ -658,15 +664,18 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td align='right'><b>---------------------------</b></td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td align='right'>Total:</td>
                                         <td align='right'><b>Php $purchase->Purchase_TotalPrice</b></td>
@@ -846,10 +855,12 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td align='right'><b>---------------------------</b></td>
@@ -1084,15 +1095,18 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td align='right'><b>---------------------------</b></td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td align='right'>Total:</td>
                                         <td align='right'><b>Php $purchase->Purchase_TotalPrice</b></td>
@@ -1272,15 +1286,18 @@ class EmailController extends Controller
                             }// foreach payor
                        $html .=  "<tr>
                                         <td></td>
+                                        <td></td>
                                         <td align='center'>Online Service Fee</td>
                                         <td align='right'>Php $onlineFee</td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td align='right'><b>---------------------------</b></td>
                                     </tr>
                                     <tr>
+                                        <td></td>
                                         <td></td>
                                         <td align='right'>Total:</td>
                                         <td align='right'><b>Php $purchase->Purchase_TotalPrice</b></td>

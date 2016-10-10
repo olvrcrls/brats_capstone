@@ -81,7 +81,7 @@ class ScheduleController extends Controller
 
     public function route_show(Path $route)
     {
-        // return $route;
+      //return $route;
         $now = date("Y-m-d");
         try
         {
@@ -100,20 +100,19 @@ class ScheduleController extends Controller
                   ->join('busstatus', 'bus.BusStatus_Id', '=', 'busstatus.BusStatus_Id')
                   ->join('triptype', 'bus.TripType_Id', '=', 'triptype.TripType_Id')
                   ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
-                  ->where('TravelDispatch_Date', '>=', $interval )
+                  ->where('TravelDispatch_Date', '>', $interval )
                   ->where('travelschedule.Route_Id', '=', $route->Route_Id)
                   ->where('triptype.TripType_Name', '=', 'Provincial')
-                  ->where('BusStatus_Name', '=', 'On Queue')
                   ->orWhere('BusStatus_Name', '=', 'Available')
                   ->orderBy('TravelDispatch_Date', 'asc')
                   ->get();
+
 
     if( ! $dispatches->count())
       {
           return redirect()->action('HomeController@fail');
       } //if there is no route                  
       
-      // return $dispatches->count();
       $dispatch_schedules = [];
 
        for( $i = 0; $i < $dispatches->count(); $i++)
