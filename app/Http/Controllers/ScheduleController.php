@@ -100,7 +100,7 @@ class ScheduleController extends Controller
                   ->join('busstatus', 'bus.BusStatus_Id', '=', 'busstatus.BusStatus_Id')
                   ->join('triptype', 'bus.TripType_Id', '=', 'triptype.TripType_Id')
                   ->join('travelschedule', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
-                  ->where('TravelDispatch_Date', '>', $interval )
+                  ->where('TravelDispatch_Date', '>=', $interval )
                   ->where('travelschedule.Route_Id', '=', $route->Route_Id)
                   ->where('triptype.TripType_Name', '=', 'Provincial')
                   ->orWhere('BusStatus_Name', '=', 'Available')
