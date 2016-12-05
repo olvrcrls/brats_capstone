@@ -1,6 +1,6 @@
 ## B.R.A.T.S. Capstone Project (BSIT 4-1D 2016-2017)
 
-# WE ARE TOP 3 BEST SYSTEMS.
+# WE ARE 3RD BEST SYSTEM.
 
 ![alt/text](public/favicon.ico)
 
