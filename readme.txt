@@ -18,3 +18,6 @@ OLIVER'S NOTES
 -- IF PROBLEMS OCCUR PLEASE:
    > CHECK YOUR DATABASE SETTINGS IN .env FILE
    > OPEN PROJECT TO TERMINAL AND TYPE "php artisan route:clear" AND "php artisan view:clear"
+
+
+PS : Some codes are not DRYer and not dynamic.
