@@ -2,7 +2,7 @@
 
 # WE ARE TOP 3 BEST SYSTEMS.
 
-[alt/text](/public/favicon.ico)
+![alt/text](public/favicon.ico)
 
 # Bus Reservation And Ticketing System
 
