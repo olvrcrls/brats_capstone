@@ -1,7 +1,5 @@
 ## B.R.A.T.S. Capstone Project (BSIT 4-1D 2016-2017)
 
-# 3RD BEST SYSTEM.
-
 ![alt/text](public/favicon.ico)
 
 # Bus Reservation And Ticketing System
