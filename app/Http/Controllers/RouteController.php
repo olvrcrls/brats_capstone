@@ -16,16 +16,6 @@ class RouteController extends Controller
     */
     public function index()
     {
-    	// $routes = Route::select('route.Route_Id', 'Route_Name')
-    	// 				->join('travelschedule', 'route.Route_Id', '=', 'travelschedule.Route_Id')
-    	// 				->join('traveldispatch', 'traveldispatch.TravelSchedule_Id', '=', 'travelschedule.TravelSchedule_Id')
-    	// 				->join('bus', 'bus.Bus_Id', '=', 'traveldispatch.Bus_Id')
-    	// 				->join('triptype', 'bus.TripType_Id', '=', 'triptype.TripType_Id')
-    	// 				->where('TripType_Name', '=', 'Provincial')
-    	// 				->where('route.Record_Status', '=', 'Active')
-    	// 				->orderBy('Route_Name', 'asc')
-    	// 				->distinct()
-    	// 				->get();
     	$title = 'Routes and Schedules - Bus Reservation And Ticketing System';
     	return view('pages.routes.routes', compact('title'));
     }
