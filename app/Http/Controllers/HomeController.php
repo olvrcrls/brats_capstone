@@ -45,6 +45,11 @@ class HomeController extends Controller
     	return view('welcome', compact('terminals', 'no_date'));
     }
 
+    /**
+    * Displays the terms and agreements of
+    * online reservation of the bus company 
+    * with the online customer.
+    */
     public function termsAndAgreement()
     {
         $percentages = Percentage::select('ReserveCancellationPercentage_NumberOfDays', 'ReserveCancellationPercentage_PercentageReturn')
@@ -65,5 +70,13 @@ class HomeController extends Controller
         'days' => $days[0]->DaysSpanToReserve_Days , 
         'voidDays' => $voidDay[0]->ReservationDaysToVoid_Days
         ]);
+    }
+
+    /**
+    * Displays the about page of the website
+    */
+    public function about()
+    {
+        return view('about');
     }
 }

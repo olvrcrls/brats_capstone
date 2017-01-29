@@ -11,9 +11,7 @@
 |
 */
 Route::get('/', 'HomeController@index');
-Route::get('/about', function () {
-		return view('about');
-});
+Route::get('/about', 'HomeController@about');
 Route::get('/noschedule', 'HomeController@fail');
 Route::post('/travel_schedules', 'ScheduleController@show');
 Route::get('/routes', 'RouteController@index');
