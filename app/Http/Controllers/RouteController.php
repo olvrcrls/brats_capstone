@@ -9,6 +9,11 @@ use App\route as Route;
 
 class RouteController extends Controller
 {
+    /**
+    * Displays the available route travels.
+    *
+    * @return \Illuminate\Http\Reponse
+    */
     public function index()
     {
     	// $routes = Route::select('route.Route_Id', 'Route_Name')
@@ -25,6 +30,11 @@ class RouteController extends Controller
     	return view('pages.routes.routes', compact('title'));
     }
 
+    /**
+    * Fetches the available route trips.
+    *
+    * @return \App\route $routes
+    */
     public function fetch()
     {
         $routes = Route::select('route.Route_Id', 'Route_Name')

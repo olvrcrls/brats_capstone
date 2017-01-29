@@ -13,6 +13,13 @@ use App\bus_seat as Seat;
 use App\days_span_to_reserve as ReservationDay;
 class ScheduleController extends Controller
 {
+  /**
+  * Function that shows the available dispatch schedules
+  * provided with the information from the home page.
+  *
+  * @param \Illuminate\Http\Request
+  * @return \Illuminate\Http\Response
+  */
     public function show(Request $request)
     {
     	// from welcome page url('/')
@@ -23,11 +30,11 @@ class ScheduleController extends Controller
     				 ->where('Terminal_IdDestination', '=', $request->destination)
     				 ->where('Record_Status', '=', 'Active')
     				 ->get();
-    	//getting the path that is requested
+    	//getting the route that is requested
     	if( ! $route->count())
     	{
     			return redirect()->action('HomeController@fail');
-    	} //if there is no route
+    	} //if there is no route schedule(s)
     	
    		$dispatches = Dispatch::select('TravelDispatch_Id', 'traveldispatch.Bus_Id', 'TravelDispatch_Date', 'BusType_Name', 'BusStatus_Name', 'TravelSchedule_Time', 'bustype.BusType_Id')
    							  ->join('bus', 'traveldispatch.Bus_Id', '=', 'bus.Bus_Id')
@@ -44,45 +51,47 @@ class ScheduleController extends Controller
    							  ->get();
 
 		if(!$dispatches->count())
-    	{
-    			return redirect()->action('HomeController@fail');
-    	} //if there is no route   							  
+  	{
+  			return redirect()->action('HomeController@fail');
+  	} //if there is no dispatch schedules.   							  
    		
-    	// return $dispatches->count();
    		$dispatch_schedules = [];
 
    		 for( $i = 0; $i < $dispatches->count(); $i++)
    		 {
-
-   		 	$dispatch_schedule = new\stdClass;
-   		 	$dispatch_schedule->TravelDispatch_Id = $dispatches[$i]->TravelDispatch_Id;
-   		 	$dispatch_schedule->route_id = $route[0]->Route_Id;
-   		 	$dispatch_schedule->travel_date = $dispatches[$i]->TravelDispatch_Date;
-   		 	$dispatch_schedule->bus = $dispatches[$i]->Bus_Id;
-   		 	$dispatch_schedule->bustype_id = $dispatches[$i]->BusType_Id;
-   		 	$dispatch_schedule->bustype = $dispatches[$i]->BusType_Name;
-   		 	$dispatch_schedule->status = $dispatches[$i]->BusStatus_Name;
-   		 	$dispatch_schedule->route = $route[0]->Route_Name;
-   		 	$dispatch_schedule->time = $dispatches[$i]->TravelSchedule_Time;
-   		 	$seats = Seat::join('busseatstatus', 'busseat.BusSeatStatus_Id', '=', 'busseatstatus.BusSeatStatus_Id')
-   		 					->where('TravelDispatch_Id', '=', $dispatches[$i]->TravelDispatch_Id)
-   		 					->where('BusSeatStatus_Name', '=', 'Open')
-   		 					->orWhere('BusSeatStatus_Name', '=', 'Available')
-   		 					->count();
-   		 	$dispatch_schedule->seats = $seats; //totalSeats available
-   		 	$dispatch_schedules[$i] = $dispatch_schedule;
-   		 }//for
+     		 	$dispatch_schedule = new\stdClass;
+     		 	$dispatch_schedule->TravelDispatch_Id = $dispatches[$i]->TravelDispatch_Id;
+     		 	$dispatch_schedule->route_id = $route[0]->Route_Id;
+     		 	$dispatch_schedule->travel_date = $dispatches[$i]->TravelDispatch_Date;
+     		 	$dispatch_schedule->bus = $dispatches[$i]->Bus_Id;
+     		 	$dispatch_schedule->bustype_id = $dispatches[$i]->BusType_Id;
+     		 	$dispatch_schedule->bustype = $dispatches[$i]->BusType_Name;
+     		 	$dispatch_schedule->status = $dispatches[$i]->BusStatus_Name;
+     		 	$dispatch_schedule->route = $route[0]->Route_Name;
+     		 	$dispatch_schedule->time = $dispatches[$i]->TravelSchedule_Time;
+     		 	$seats = Seat::join('busseatstatus', 'busseat.BusSeatStatus_Id', '=', 'busseatstatus.BusSeatStatus_Id')
+     		 					->where('TravelDispatch_Id', '=', $dispatches[$i]->TravelDispatch_Id)
+     		 					->where('BusSeatStatus_Name', '=', 'Open')
+     		 					->orWhere('BusSeatStatus_Name', '=', 'Available')
+     		 					->count();
+     		 	$dispatch_schedule->seats = $seats; //totalSeats available
+     		 	$dispatch_schedules[$i] = $dispatch_schedule;
+   		 }//for loop
    		 $title = 'Available Bus Schedules - Bus Reservation And Ticketing System';
    		 return view('pages.schedules.schedules', compact('dispatch_schedules','title'));
-
     }
 
 
-
+    /**
+    * Shows available dispatch schedules from
+    * the route list page.
+    *
+    * @param \App\route $route
+    * @return \Illuminate\Http\Response
+    */
     public function route_show(Path $route)
     {
-      //return $route;
-        $now = date("Y-m-d");
+        $now = date("Y-m-d"); // date today.
         try
         {
           $intervalDays = ReservationDay::select('DaysSpanToReserve_Days')->orderBy('DaysSpanToReserve_Id', 'desc')->take(1)->get(); 
@@ -92,7 +101,9 @@ class ScheduleController extends Controller
         {
           $intervalDays = 3;
         }
-        $interval = date('Y-m-d', strtotime($now. "+ $intervalDays days")); //since the only allowed days before reserving a ticket is a minimum of 3 days
+        //since the only allowed days before reserving a ticket is a minimum of $intervalDays days
+        $interval = date('Y-m-d', strtotime($now. "+ $intervalDays days")); 
+        
         //All Schedules are picked from a specific route
           $dispatches = Dispatch::select('TravelDispatch_Id', 'traveldispatch.Bus_Id', 'TravelDispatch_Date', 'BusType_Name', 'BusStatus_Name', 'TravelSchedule_Time', 'bustype.BusType_Id')
                   ->join('bus', 'traveldispatch.Bus_Id', '=', 'bus.Bus_Id')
@@ -108,10 +119,10 @@ class ScheduleController extends Controller
                   ->get();
 
 
-    if( ! $dispatches->count())
-      {
-          return redirect()->action('HomeController@fail');
-      } //if there is no route                  
+    if(! $dispatches->count())
+    {
+      return redirect()->action('HomeController@fail');
+    } //if there is no dispatch schedules.                  
       
       $dispatch_schedules = [];
 
@@ -140,6 +151,11 @@ class ScheduleController extends Controller
        return view('pages.schedules.schedules', compact('dispatch_schedules','title'));
     }
 
+    /**
+    * Retrieves the $days of allowance before
+    * the trip.
+    * @return int $days
+    */
     public function fetchDays()
     {
         try {

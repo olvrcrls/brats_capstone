@@ -10,6 +10,12 @@ class terminal extends Model
  	public $table = "terminal";
  	public $timestamps = false;
 
+
+ 	public function getTerminalNameAttribute($value)
+ 	{
+ 		return ucwords($value);
+ 	}
+ 	
  	public function travel_schedule()
  	{
  		return $this->hasMany(travel_schedule::class, 'TravelSchedule_Id', 'TravelSchedule_Id');

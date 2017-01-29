@@ -17,6 +17,15 @@ use App\reservation_days_to_void as Void;
 
 class EmailController extends Controller
 {
+    /**
+    * Generates the HTML to PDF voucher file that will be
+    * e-mailed to the customer's provided e-mail address.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @param \App\purchase $purchase
+    * @param \App\online_customer $customer
+    * @return \Illuminate\Http\Reponse
+    */
     public function index(Request $request, Purchase $purchase, Customer $customer)
     {
         $info = new\stdClass;
@@ -476,7 +485,15 @@ class EmailController extends Controller
 
 		
     }
-
+    /**
+    * Generates a HTML to PDF voucher file and
+    * it saves directly to the user's specified location
+    * of his/her device.
+    *
+    * @param \App\purchase $purchase
+    * @param \App\online_customer $customer
+    * @return \Illuminate\Http\Reponse
+    */
     public function save(Purchase $purchase, Customer $customer)
     {
     	$info = new\stdClass;
@@ -911,6 +928,14 @@ class EmailController extends Controller
     	return $pdf->download("$purchase->Purchase_Id - E-Voucher BRATS.pdf");
     }
 
+    /**
+    * Generates the HTML to PDF voucher file
+    * and allows the direct printing on the browser
+    *
+    * @param \App\purchase $purchase
+    * @param \App\online_customer $customer
+    * @return FileStream
+    */
     public function printDocument(Purchase $purchase, Customer $customer)
     {
         $info = new\stdClass;
@@ -1343,8 +1368,11 @@ class EmailController extends Controller
     	return $pdf->stream("$purchase->Purchase_Id - E-Voucher BRATS.pdf");
     }
 
-    // function for getting the amount 
-    // -> added to model for shortcut
+    /**
+    * Gets the recent online service fee.
+    * 
+    * @return float $fee
+    */
     public function getOnlineFee()
     {
         $fee = OnlineFee::select('ReservationFee_Amount')
