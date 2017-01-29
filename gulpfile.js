@@ -19,3 +19,9 @@ elixir(function(mix) {
 	mix.browserify('cancellation.js', 'public/js/compiled/cancellation_es6.js');
 	mix.browserify('routes.js', 'public/js/compiled/routes_es6.js');
 });
+
+elixir(mix => {
+	mix.browserSync({
+		proxy: 'localhost:8000'
+	})
+})
