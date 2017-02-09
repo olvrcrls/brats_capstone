@@ -26,6 +26,7 @@ use App\reserve_cancellation_percentage as Percentage;
 use App\reserve_cancellation as Cancellation;
 use App\reservation_days_to_void as Void;
 use App\utilities_company as Utilities;
+
 class TransactionController extends Controller
 {
     public function input(Request $request)
@@ -89,6 +90,12 @@ class TransactionController extends Controller
     	return view("pages.bus.seats", compact('title','seats','fares', 'trip', 'seating', 'width', 'height', 'ctrRow'));
     }
 
+    /**
+    * Viewing of the input reservation details
+    * and displaying the total amount of payment.
+    *
+    * @return \Illuminate\Http\Response
+    */
     public function view(Request $request)
     {
         $this->validate($request, [
@@ -135,6 +142,13 @@ class TransactionController extends Controller
         return view('pages.purchase.iterate', compact('request', 'totalFarePrice', 'passengers', 'title', 'onlineFee', 'percentages', 'totalDays'));
     }
 
+    /**
+    * Saving the online reservation details
+    * that has been made and redirecting the
+    * user to a PDF view page of the reservation.
+    *
+    * @return \Ilumminate\Http\Response
+    */
     public function store(Request $request)
     {
         $totalFarePrice = 0;
@@ -225,12 +239,23 @@ class TransactionController extends Controller
 
     }
 
+    /**
+    * Displaying the view page of managing reserved
+    * trips from the past.
+    *
+    * @return \Illuminate\Http\Response
+    */
     public function manage(Request $request)
     {
         $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
         return view('pages.purchase.manage', compact('title'));
     }
-
+    /**
+    * Retrieving the online reservation information
+    * trips from the input of the user.
+    *
+    * @return \Illuminate\Http\Response
+    */
     public function retrieve(Request $request)
     {
         $title = 'Manage Booked Trips - Bus Reservation And Ticketing System';
@@ -455,7 +480,12 @@ class TransactionController extends Controller
         } // redirects back if invalid request
 
     }
-
+    /**
+    * Processing the request of cancellation
+    * or refund of the reserved trip.
+    *
+    * @return \Illuminate\Http\Response
+    */
     public function cancel(Request $request)
     {
         $this->validate($request, [
