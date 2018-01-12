@@ -7,6 +7,7 @@
 - Coded with the use of Laravel PHP Web Framework 5.2
 - This is only for the Ticket/Seat reservations subsystem of the project.
 - Check the readme.txt for instructions of installation.
+- The complete source code of the thesis, including the Window Platform is found <a href="https://tinyurl.com/brats-complete-source-code">here</a>.
 
 
 # Note
